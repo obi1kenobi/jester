@@ -1,0 +1,35 @@
+{
+  "name": "jester",
+  "preferGlobal": false,
+  "version": "0.0.1",
+  "author": "Predrag Gruevski <predrag.gruevski@gmail.com>",
+  "description": "An authentication system that enables two-factor authentication using only client-side Javascript, without relying on any server-side support aside from changing one's password.",
+  "contributors": [
+    {
+      "name": "Predrag Gruevski",
+      "email": "predrag.gruevski@gmail.com"
+    }
+  ],
+  "scripts": {
+    "start": "chmod +x ./scripts/start.sh && ./scripts/start.sh",
+    "test": "chmod +x ./scripts/test.sh && ./scripts/test.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/obi1kenobi/jester.git"
+  },
+  "dependencies": {
+    "coffee-script": "~1.9.0",
+    "coffeelint": "*"
+  },
+  "devDependencies": {
+    "chai": "*",
+    "chai-things": "*",
+    "mocha": "*",
+    "temp": "0.6.0"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=0.10.24"
+  }
+}
