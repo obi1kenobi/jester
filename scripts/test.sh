@@ -13,8 +13,8 @@ fi
 # run build script
 chmod +x ./scripts/build.sh && ./scripts/build.sh
 
-pushd ./bin
+pushd ./bin/js
 
-../node_modules/.bin/mocha --bail --recursive --reporter spec --ui bdd --timeout 2000 --slow 100
+../../node_modules/.bin/mocha --bail --recursive --reporter spec --ui bdd --timeout 2000 --slow 100
 
 popd
