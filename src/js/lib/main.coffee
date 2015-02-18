@@ -62,4 +62,4 @@ if module?.exports?
   module.exports = Jester
 else
   # export for browser
-  this.jester = Jester
+  define(Jester)
