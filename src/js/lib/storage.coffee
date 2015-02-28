@@ -40,7 +40,7 @@ browserSetup = () ->
       value = JSON.parse(value).value
     return value
 
-  define(['util/logging'], Storage)
+  define(['./util/logging'], Storage)
 
 if module?.exports?
   # export for node.js

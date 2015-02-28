@@ -20,16 +20,16 @@ Passwords = (cryptoProxies, logging, stringUtils, constants) ->
 
 nodeSetup = () ->
   cryptoProxies = require('./crypto/proxies')
-  logging = require('./util/logging')
-  stringUtils = require('./util/string')
-  constants = require('./config/constants')
+  logging       = require('./util/logging')
+  stringUtils   = require('./util/string')
+  constants     = require('./config/constants')
   module.exports = Passwords(cryptoProxies, logging, stringUtils, constants)
 
 browserSetup = () ->
-  define(['crypto/proxies', \
-          'util/logging',   \
-          'util/string',    \
-          'config/constants'], Passwords)
+  define(['./crypto/proxies', \
+          './util/logging',   \
+          './util/string',    \
+          './config/constants'], Passwords)
 
 if module?.exports?
   # export for node.js
