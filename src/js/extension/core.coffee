@@ -1,6 +1,10 @@
 define ['lib/util/logging'], (logging) ->
+  logger = logging.logger(["ext", "core"])
   Core =
-    _logger: logging.logger(["ext", "core"])
 
     start: () ->
-      Core._logger("Hello world!")
+      logger("Hello world!")
+
+    # inject the content script into the currently active tab
+    injectContentScript: () ->
+      chrome.tabs.executeScript {file: './content.js'}
