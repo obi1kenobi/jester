@@ -2,7 +2,7 @@ path = require('path')
 
 module.exports = (grunt) ->
   codeFiles = ['Gruntfile.coffee', 'src/**/*.coffee']
-  allFiles = ['Gruntfile.coffee', 'src/**']
+  allFiles = ['Gruntfile.coffee', 'src/**', 'dependencies/**']
 
   rebuildTasks = ['coffeelint', 'clean', 'coffee', 'copy', 'run:tests']
 
@@ -27,12 +27,24 @@ module.exports = (grunt) ->
       dest: 'bin/js'
       ext: '.js'
 
+  dependenciesConfig =
+    expand: true
+    cwd: 'dependencies/'
+    src: ['**/*.js']
+    dest: 'bin/js/deps/'
+
+  resourcesConfig =
+    expand: true
+    cwd: 'src/'
+    src: ['{manifest.json,html/**,resources/**}']
+    dest: 'bin/'
+
   copy =
-    files:
-      expand: true
-      cwd: 'src/'
-      src: ['{manifest.json,html/**,resources/**}']
-      dest: 'bin/'
+    main:
+      files: [
+        dependenciesConfig,
+        resourcesConfig,
+      ]
 
   # path normalization needed for Windows support
   # because Windows CMD doesn't support forward slashes

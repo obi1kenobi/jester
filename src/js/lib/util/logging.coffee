@@ -3,11 +3,13 @@ Logging =
   Create a logger function. Takes an array of names, to be concatenated
   in the form a:b:c and prepended to any printed output.
   ###
-  logger: () ->
-    name = arguments.join(':') + ":"
+  logger: (path) ->
+    name = path.join(':') + ":"
     return () ->
-      arguments.unshift(name)
-      console.log(arguments.join(' '))
+      if arguments.length == 1
+        console.log(name, arguments[0])
+      else
+        console.log(name, arguments)
 
 nodeSetup = () ->
   module.exports = Logging
