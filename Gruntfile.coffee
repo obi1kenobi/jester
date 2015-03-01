@@ -1,45 +1,56 @@
 path = require('path')
 
 module.exports = (grunt) ->
-  files = ['Gruntfile.coffee', 'src/**/*.coffee']
+  codeFiles = ['Gruntfile.coffee', 'src/**/*.coffee']
+  allFiles = ['Gruntfile.coffee', 'src/**']
+
+  rebuildTasks = ['coffeelint', 'clean', 'coffee', 'copy', 'run:tests']
 
   watch =
-    files: files
-    tasks: ['coffeelint', 'clean', 'coffee', 'run:tests']
+    files: allFiles
+    tasks: rebuildTasks
 
   coffeelint =
     extension:
       files:
-        src: files
+        src: codeFiles
       options:
         configFile: './coffeelint.json'
 
-  clean = ["./bin"]
+  clean = ['./bin']
 
   coffee =
     files:
-      expand: true,
-      cwd: 'src/js',
-      src: ['**/*.coffee'],
-      dest: 'bin/js',
+      expand: true
+      cwd: 'src/js'
+      src: ['**/*.coffee']
+      dest: 'bin/js'
       ext: '.js'
+
+  copy =
+    files:
+      expand: true
+      cwd: 'src/'
+      src: ['{manifest.json,html/**,resources/**}']
+      dest: 'bin/'
 
   # path normalization needed for Windows support
   # because Windows CMD doesn't support forward slashes
-  run_tests_cmd = path.normalize('../../node_modules/.bin/mocha')
-  run_tests_args = '--bail --recursive --reporter spec --ui bdd --timeout 2000 --slow 100'
+  runTestsCmd = path.normalize('../../node_modules/.bin/mocha')
+  runTestsArgs = '--bail --recursive --reporter spec --ui bdd --timeout 2000 --slow 100'
   run =
     tests:
-      exec: "cd bin && cd js && #{run_tests_cmd} #{run_tests_args}"
+      exec: "cd bin && cd js && #{runTestsCmd} #{runTestsArgs}"
 
-  config = {watch, coffeelint, clean, coffee, run}
+  config = {watch, coffeelint, clean, coffee, copy, run}
   grunt.initConfig(config)
 
   grunt.loadNpmTasks('grunt-contrib-watch')
   grunt.loadNpmTasks('grunt-contrib-coffee')
   grunt.loadNpmTasks('grunt-contrib-clean')
+  grunt.loadNpmTasks('grunt-contrib-copy')
   grunt.loadNpmTasks('grunt-coffeelint')
   grunt.loadNpmTasks('grunt-run')
   # grunt.loadNpmTasks('grunt-contrib-uglify')
 
-  grunt.registerTask('default', ['coffeelint', 'clean', 'coffee', 'run:tests'])
+  grunt.registerTask('default', rebuildTasks)

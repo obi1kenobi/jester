@@ -1,0 +1,10 @@
+{
+  "manifest_version": 2,
+  "name": "Jester",
+  "version": "0.1",
+  "description": "An authentication system that enables two-factor authentication using only client-side Javascript, without relying on any server-side support aside from changing one's password.",
+  "browser_action": {
+    "default_icon": "resources/jester_icon64.png",
+    "default_popup": "html/popup.html"
+  }
+}
