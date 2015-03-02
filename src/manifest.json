@@ -4,7 +4,7 @@
   "version": "0.1",
   "description": "An authentication system that enables two-factor authentication using only client-side Javascript, without relying on any server-side support aside from changing one's password.",
   "background": {
-    "page": "html/background.html"
+    "scripts": ["js/extension/core.js"]
   },
   "browser_action": {
     "default_icon": "resources/jester_icon64.png",

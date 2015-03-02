@@ -1,4 +1,9 @@
-Passwords = (cryptoProxies, logging, stringUtils, constants) ->
+cryptoProxies = require('./crypto/proxies')
+logging       = require('./util/logging')
+stringUtils   = require('./util/string')
+constants     = require('./config/constants')
+
+Passwords =
   ###
   Creates a new securely randomly-generated password, and returns it
   encoded in base64.
@@ -18,22 +23,5 @@ Passwords = (cryptoProxies, logging, stringUtils, constants) ->
   encryptPassword: (password) ->
     throw new Error("Not implemented")
 
-nodeSetup = () ->
-  cryptoProxies = require('./crypto/proxies')
-  logging       = require('./util/logging')
-  stringUtils   = require('./util/string')
-  constants     = require('./config/constants')
-  module.exports = Passwords(cryptoProxies, logging, stringUtils, constants)
 
-browserSetup = () ->
-  define(['./crypto/proxies', \
-          './util/logging',   \
-          './util/string',    \
-          './config/constants'], Passwords)
-
-if module?.exports?
-  # export for node.js
-  nodeSetup()
-else
-  # export for browser
-  browserSetup()
+module.exports = Passwords

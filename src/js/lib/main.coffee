@@ -57,9 +57,4 @@ Jester =
     throw new Error("Not implemented")
 
 
-if module?.exports?
-  # export for node.js
-  module.exports = Jester
-else
-  # export for browser
-  define(Jester)
+module.exports = Jester

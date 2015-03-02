@@ -24,15 +24,5 @@ Domain =
       url: 'https://login.yahoo.com/config/login?logout=1'
       type: 'hit'
 
-nodeSetup = () ->
-  module.exports = Domain
 
-browserSetup = () ->
-  define(Domain)
-
-if module?.exports?
-  # we're in Node
-  nodeSetup()
-else
-  # running in browser
-  browserSetup()
+module.exports = Domain

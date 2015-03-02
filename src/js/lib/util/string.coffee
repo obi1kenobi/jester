@@ -9,18 +9,18 @@ nodeSetup = () ->
   StringUtils.arrayToBase64 = (arr) ->
     buffer = new Buffer(arr)
     return buffer.toString('base64')
-  module.exports = StringUtils
 
 browserSetup = () ->
   StringUtils.arrayToBase64 = (arr) ->
     str = String.fromCharCode.apply(null, arr)
     return btoa(str)
 
-  define(StringUtils)
 
-if module?.exports?
+if !localStorage?
   # we're in Node
   nodeSetup()
 else
   # running in browser
   browserSetup()
+
+module.exports = StringUtils

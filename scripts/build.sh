@@ -8,7 +8,7 @@ set -e
 # make sure that it's deleting the right ones
 if [ "$0" != "./scripts/build.sh" ]; then
   echo "Build failed: Wrong cwd"
-  echo "Executed from wrong cwd, you need to be in the obsidian root to call this script"
+  echo "Executed from wrong cwd, you need to be in the jester root to call this script"
   exit 1
 fi
 

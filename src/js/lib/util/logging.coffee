@@ -11,15 +11,4 @@ Logging =
       else
         console.log(name, arguments)
 
-nodeSetup = () ->
-  module.exports = Logging
-
-browserSetup = () ->
-  define(Logging)
-
-if module?.exports?
-  # we're in Node
-  nodeSetup()
-else
-  # running in browser
-  browserSetup()
+module.exports = Logging

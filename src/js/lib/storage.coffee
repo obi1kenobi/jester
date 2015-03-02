@@ -24,9 +24,6 @@ nodeSetup = () ->
   _get = (key) ->
     return store[key]
 
-  logging = require('./util/logging')
-  module.exports = Storage(logging)
-
 browserSetup = () ->
   _set = (key, value) ->
     keyString = JSON.stringify({key})
@@ -40,11 +37,12 @@ browserSetup = () ->
       value = JSON.parse(value).value
     return value
 
-  define(['./util/logging'], Storage)
-
-if module?.exports?
+if !localStorage?
   # export for node.js
   nodeSetup()
 else
   # export for browser
   browserSetup()
+
+logging = require('./util/logging')
+module.exports = Storage(logging)
