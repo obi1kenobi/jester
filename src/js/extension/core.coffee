@@ -1,11 +1,20 @@
 logging = require('../lib/util/logging')
 logger = logging.logger(["ext", "core"])
-Core =
-  start: () ->
-    logger("Hello world!")
 
-  # inject the content script into the currently active tab
-  injectContentScript: () ->
-    chrome.tabs.executeScript {file: './content.js'}
+yahooInfo = require('../lib/config/domain').yahoo
 
-Core.start()
+initialize = () ->
+  logger("Initializing...")
+  chrome.runtime.onMessage.addListener messageListener
+
+messageListener = (message, sender, response) ->
+  logger("Received message: #{JSON.stringify(message)}")
+
+  chrome.tabs.create {url: yahooInfo.login.url}, (tab) ->
+    logger("Login tab created successfully, id=#{tab.id}")
+    chrome.tabs.executeScript tab.id, {file: 'js/extension/content/login.js'}, () ->
+      logger("Login content script injected")
+      message = "Hello world!"
+      chrome.tabs.sendMessage tab.id, message
+
+initialize()
