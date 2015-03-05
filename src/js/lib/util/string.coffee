@@ -16,7 +16,7 @@ browserSetup = () ->
     return btoa(str)
 
 
-if !localStorage?
+if !window?
   # we're in Node
   nodeSetup()
 else

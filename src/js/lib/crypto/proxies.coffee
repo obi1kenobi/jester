@@ -17,7 +17,7 @@ browserSetup = () ->
     return arr
 
 
-if !localStorage?
+if !window?
   # we're in Node
   nodeSetup()
 else
