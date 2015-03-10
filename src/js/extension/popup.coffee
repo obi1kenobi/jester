@@ -1,3 +1,7 @@
+logging   = require('../lib/util/logging')
+logger    = logging.logger(['ext', 'popup'])
+constants = require('./constants')
+
 SETUP_BUTTON_ID   = 'btn-setup'
 GENCODE_BUTTON_ID = 'btn-gencode'
 LOGIN_BUTTON_ID   = 'btn-login'
@@ -13,9 +17,6 @@ INPUTS_TABLE_ID   = 'tbl-inputs'
 
 INVISIBLE_DISPLAY = 'none'
 VISIBLE_DISPLAY   = ''
-
-logging = require('../lib/util/logging')
-logger = logging.logger(['ext', 'popup'])
 
 INITIAL_STATE = 'initial'
 LOGIN_STATE   = 'login'
@@ -60,6 +61,7 @@ attachEventListeners = () ->
   document.getElementById(SETUP_BUTTON_ID).onclick = setupButtonClicked
   document.getElementById(GENCODE_BUTTON_ID).onclick = genCodeButtonClicked
   document.getElementById(LOGIN_BUTTON_ID).onclick = loginButtonClicked
+  document.getElementById(PROCEED_BUTTON_ID).onclick = proceedButtonClicked
   document.getElementById(BACK_BUTTON_ID).onclick = backButtonClicked
   logger("Done setting up listeners...")
 
@@ -77,7 +79,19 @@ loginButtonClicked = () ->
 
 proceedButtonClicked = () ->
   logger("Proceed button clicked")
-  chrome.runtime.sendMessage("Login")
+  username = document.getElementById(USERNAME_INPUT_ID).value
+  password = document.getElementById(PASSWORD_INPUT_ID).value
+  type = ''
+  switch currentState
+    when SETUP_STATE
+      type = constants.SETUP_MESSAGE
+    when LOGIN_STATE
+      type = constants.LOGIN_MESSAGE
+    when GENCODE_STATE
+      type = constants.GENCODE_MESSAGE
+    else
+      throw new Error("unsupported state on Proceed button click: #{currentState}")
+  chrome.runtime.sendMessage {type, args: {username, password}}
 
 backButtonClicked = () ->
   logger("Back button clicked")
