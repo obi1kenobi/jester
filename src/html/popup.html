@@ -9,12 +9,35 @@
     <!-- <link rel="author" href="humans.txt"> -->
   </head>
   <body>
-    <button id="btn-setup">Setup Jester</button>
-    <input type="text" id="inp-setup-pwd" style="display:none">
-    <button id="btn-gencode">Generate auth code</button>
-    <input type="text" id="inp-gencode-pwd" style="display:none">
-    <button id="btn-login">Login</button>
-    <input type="text" id="inp-login-pwd" style="display:none">
+    <table id="tbl-options">
+       <tbody>
+         <tr>
+           <td><button id="btn-setup">Setup Jester</button></td>
+         </tr>
+         <tr>
+           <td><button id="btn-gencode">Generate auth code</button></td>
+         </tr>
+         <tr>
+           <td><button id="btn-login">Login</button></td>
+         </tr>
+       </tbody>
+     </table>
+    <table id="tbl-inputs" style="display: none">
+      <tbody>
+        <tr>
+          <td>Username</td>
+          <td><input type="text" id="inp-username"></td>
+        </tr>
+        <tr>
+          <td>Password</td>
+          <td><input type="password" id="inp-pwd"></td>
+        </tr>
+        <tr>
+          <td><button id="btn-back">Back</button></td>
+          <td><button id="btn-proceed">Proceed</button></td>
+        </tr>
+      </tbody>
+    </table>
   </body>
   <script src="../js/extension/popup.js"></script>
 </html>
