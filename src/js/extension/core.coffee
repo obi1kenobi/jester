@@ -13,9 +13,6 @@ initialize = () ->
   messageHandlers[constants.GENCODE_MESSAGE] = genCodeMessageHandler
   chrome.runtime.onMessage.addListener messageListener
 
-sendMessageToLoginScript = (tabId, elementIds, username, password, cb) ->
-  chrome.tabs.sendMessage tabId, {elementIds, username, password}, cb
-
 messageListener = (message, sender, response) ->
   logger("Received message: #{JSON.stringify(message)}")
 
@@ -28,11 +25,15 @@ messageListener = (message, sender, response) ->
 loginMessageHandler = (args) ->
   chrome.tabs.create {url: yahooInfo.login.url}, (tab) ->
     logger("Login tab created successfully, id=#{tab.id}")
-    chrome.tabs.executeScript tab.id, {file: 'js/extension/content/login.js'}, () ->
-      logger("Login content script injected")
+    chrome.tabs.executeScript tab.id, {file: 'js/extension/content/universal.js'}, () ->
+      logger("Universal content script injected")
       {username, password} = args
-      sendMessageToLoginScript tab.id, yahooInfo.login.args, username, password, () ->
-        logger("Login content script finished executing")
+      elementValues = {}
+      elementValues[yahooInfo.login.args.usernameId] = username
+      elementValues[yahooInfo.login.args.passwordId] = password
+      submitElementId = yahooInfo.login.args.submitId
+      chrome.tabs.sendMessage tab.id, {elementValues, submitElementId}, () ->
+        logger("Universal content script finished executing")
 
 setupMessageHandler = (args) ->
   logger('Setup message handler not implemented yet')

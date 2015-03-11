@@ -1,3 +1,6 @@
+logging   = require('./util/logging')
+logger    = logging.logger(["lib", "index"])
+
 ###
 A library that allows client-side-only use of two-factor authentication (2FA).
 
