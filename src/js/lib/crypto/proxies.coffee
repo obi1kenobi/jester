@@ -15,11 +15,11 @@ nodeSetup = () ->
 browserSetup = () ->
   encryptionKeyCache = {}
 
-  stringToBuffer = (string) ->
-    buffer = new ArrayBuffer(string.length * 2)
+  stringToBuffer = (text) ->
+    buffer = new ArrayBuffer(text.length * 2)
     bufferView = new Uint16Array(buffer)
-    for i in [0...string.length]
-      bufferView[i] = password.charCodeAt(i)
+    for i in [0...text.length]
+      bufferView[i] = text.charCodeAt(i)
     return buffer
 
   bufferToString = (buffer) ->
@@ -27,7 +27,7 @@ browserSetup = () ->
 
   getPBKDF2key = (password, cb) ->
     passwordBuffer = stringToBuffer(password)
-    promise = window.crypto.subtle.importKey "raw", \
+    promise = window.crypto.subtle.importKey 'raw', \
                                              passwordBuffer, \
                                              constants.KEY_DERIVATION_ALGORITHM, \
                                              false, \
@@ -75,10 +75,12 @@ browserSetup = () ->
     else
       getPBKDF2key password, (err, pbkdf2key) ->
         if err?
+          console.log "Couldn't get pbkdf2 key."
           cb?(err)
         else
           generateEncryptionKey pbkdf2key, salt, (err, key) ->
             if err?
+              console.log "Couldn't generate AES key."
               cb?(err)
             else
               encryptionKeyCache[password][salt] = key
