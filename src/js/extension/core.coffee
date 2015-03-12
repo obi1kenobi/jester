@@ -55,11 +55,11 @@ testCrypto = () ->
     logger("Failed to generate AES-GCM key")
     throw err
 
-  #crypto.getOrCreateEncryptionKey password, salt, (err, key) ->
-  #  if err?
-  #    logger("Error when making encryption key: #{JSON.stringify(err)}")
-  #    throw err
-  #  else
+  # crypto.getOrCreateEncryptionKey password, salt, (err, key) ->
+  #   if err?
+  #     logger("Error when making encryption key: #{JSON.stringify(err)}")
+  #     throw err
+  #   else
   promise.then (key) ->
     crypto.encryptString plaintext, key, (err, result) ->
       if err?
