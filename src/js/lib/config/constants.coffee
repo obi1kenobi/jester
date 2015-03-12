@@ -10,5 +10,6 @@ Constants =
     name: 'AES-GCM'
     length: 256
   ENCRYPTION_PERMISSIONS: ["encrypt", "decrypt"]
+  ENCRYPTION_AUTH_TAG_LENGTH: 128
 
 module.exports = Constants

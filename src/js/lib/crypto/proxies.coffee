@@ -15,15 +15,18 @@ nodeSetup = () ->
 browserSetup = () ->
   encryptionKeyCache = {}
 
-  passwordToBuffer = (password) ->
-    buffer = new ArrayBuffer(password.length * 2)
+  stringToBuffer = (string) ->
+    buffer = new ArrayBuffer(string.length * 2)
     bufferView = new Uint16Array(buffer)
-    for i in [0...password.length]
+    for i in [0...string.length]
       bufferView[i] = password.charCodeAt(i)
     return buffer
 
+  bufferToString = (buffer) ->
+    return String.fromCharCode.apply(null, new Uint16Array(buffer))
+
   getPBKDF2key = (password, cb) ->
-    passwordBuffer = passwordToBuffer(password)
+    passwordBuffer = stringToBuffer(password)
     promise = window.crypto.subtle.importKey "raw", \
                                              passwordBuffer, \
                                              constants.KEY_DERIVATION_ALGORITHM, \
@@ -80,6 +83,56 @@ browserSetup = () ->
             else
               encryptionKeyCache[password][salt] = key
               cb?(null, key)
+
+  ###
+  Callback format is (error, result), where
+  result = {iv, authTag, ciphertext}
+  ###
+  Proxies.encryptString = (plaintext, key, cb) ->
+    textBuffer = stringToBuffer(plaintext)
+    iv = Proxies.getSecureRandomBytes(16)
+    authTag = Proxies.getSecureRandomBytes(constants.ENCRYPTION_AUTH_TAG_LENGTH)
+
+    encryptionConfig =
+      name: constants.ENCRYPTION_ALGORITHM.name
+      iv: iv
+      additionalData: authTag
+      tagLength: constants.ENCRYPTION_AUTH_TAG_LENGTH
+
+    promise = window.crypto.subtle.encrypt encryptionConfig, key, textBuffer
+
+    promise.then (cipherBuffer) ->
+      ciphertext = bufferToString(cipherBuffer)
+      func = cb
+      cb = null
+      func?(null, {iv, authTag, ciphertext})
+
+    promise.catch (err) ->
+      func = cb
+      cb = null
+      func?(err)
+
+  Proxies.decryptString = (ciphertext, key, iv, authTag, cb) ->
+    cipherBuffer = stringToBuffer(ciphertext)
+
+    decryptionConfig =
+      name: constants.ENCRYPTION_ALGORITHM.name
+      iv: iv
+      additionalData: authTag
+      tagLength: constants.ENCRYPTION_AUTH_TAG_LENGTH
+
+    promise = window.crypto.subtle.decrypt decryptionConfig, key, cipherBuffer
+
+    promise.then (textBuffer) ->
+      plaintext = bufferToString(textBuffer)
+      func = cb
+      cb = null
+      func?(null, plaintext)
+
+    promise.catch (err) ->
+      func = cb
+      cb = null
+      func?(err)
 
   Proxies.getSecureRandomBytes = (count) ->
     window.crypto.getRandomValues(new Uint8Array(count))
