@@ -6,9 +6,9 @@ Constants =
   KEY_DERIVATION_ITERATIONS: 2048
   KEY_DERIVATION_HASH:
     name: 'SHA-256'
-  ENCRYPTION_KEY_ALGORITHM:
+  ENCRYPTION_ALGORITHM:
     name: 'AES-GCM'
     length: 256
-  ENCRYPTION_KEY_PERMISSIONS: ["encrypt", "decrypt"]
+  ENCRYPTION_PERMISSIONS: ["encrypt", "decrypt"]
 
 module.exports = Constants
