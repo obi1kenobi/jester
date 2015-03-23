@@ -23,7 +23,7 @@ Jester =
     (url, elementValues, submitElementId, cb) where
       url               {String} url where to form is found
       elementValues     {Object} mapping of element ID -> value to set it to
-      submitElementId   {String} ID of the element that submits the form
+      submitElementId   {String} ID of the element that submits the form when clicked
       cb                {function} (Optional) callback when form was submitted
   ###
   registerShim: (newShim) ->

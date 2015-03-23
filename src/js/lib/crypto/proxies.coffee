@@ -1,4 +1,5 @@
 constants = require('../config/constants')
+logger    = require('../util/logging').logger(['crypto', 'proxies'])
 
 Proxies =
   ###
@@ -75,12 +76,12 @@ browserSetup = () ->
     else
       getPBKDF2key password, (err, pbkdf2key) ->
         if err?
-          console.log "Couldn't get pbkdf2 key."
+          logger "Couldn't get pbkdf2 key."
           cb?(err)
         else
           generateEncryptionKey pbkdf2key, salt, (err, key) ->
             if err?
-              console.log "Couldn't generate AES key."
+              logger "Couldn't generate AES key."
               cb?(err)
             else
               encryptionKeyCache[password][salt] = key
