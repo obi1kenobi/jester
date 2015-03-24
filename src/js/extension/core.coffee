@@ -44,34 +44,25 @@ testCrypto = () ->
   plaintext = "Hello world!"
   salt = "salt and pepper"
 
-  # Workaround because Chrome does not currently support any key-derivation function
-  promise = window.crypto.subtle.generateKey {name: 'AES-GCM', length: 256}, \
-                                             false, \
-                                             ["encrypt", "decrypt"]
-  promise.catch (err) ->
-    logger("Failed to generate AES-GCM key")
-    throw err
-
-  # crypto.getOrCreateEncryptionKey password, salt, (err, key) ->
-  #   if err?
-  #     logger("Error when making encryption key: #{JSON.stringify(err)}")
-  #     throw err
-  #   else
-  promise.then (key) ->
-    crypto.encryptString plaintext, key, (err, result) ->
-      if err?
-        logger("Error when encrypting: #{JSON.stringify(err)}")
-        throw err
-      else
-        {iv, authTag, ciphertext} = result
-        # optionally, corrupt authTag to see if decryption fails
-        # authTag[0] += 1
-        crypto.decryptString ciphertext, key, iv, authTag, (err, plaintext) ->
-          if err?
-            logger("Error when decrypting: #{JSON.stringify(err)}")
-            throw err
-          else
-            logger("Decrypted text: #{plaintext}")
+  crypto.getOrCreateEncryptionKey password, salt, (err, key) ->
+    if err?
+      logger("Failed to derive key from password!")
+      throw err
+    else
+      crypto.encryptString plaintext, key, (err, result) ->
+        if err?
+          logger("Error when encrypting!")
+          throw err
+        else
+          {iv, authTag, ciphertext} = result
+          # optionally, corrupt authTag to see if decryption fails
+          # authTag[0] += 1
+          crypto.decryptString ciphertext, key, iv, authTag, (err, plaintext) ->
+            if err?
+              logger("Error when decrypting!")
+              throw err
+            else
+              logger("Decrypted text: #{plaintext}")
 
 initialize()
 testCrypto()
