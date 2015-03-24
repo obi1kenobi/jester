@@ -2,6 +2,7 @@ logging   = require('../lib/util/logging')
 logger    = logging.logger(["ext", "core"])
 constants = require('./constants')
 shim      = require('./shim')
+jester    = require('../lib/index')
 
 yahooInfo = require('../lib/config/domain').yahoo
 
@@ -9,6 +10,7 @@ messageHandlers = {}
 
 initialize = () ->
   logger("Initializing...")
+  jester.registerShim shim
   messageHandlers[constants.LOGIN_MESSAGE] = loginMessageHandler
   messageHandlers[constants.SETUP_MESSAGE] = setupMessageHandler
   messageHandlers[constants.GENCODE_MESSAGE] = genCodeMessageHandler
