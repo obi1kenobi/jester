@@ -1,5 +1,6 @@
 logging   = require('./util/logging')
 logger    = logging.logger(["lib", "index"])
+storage   = require('./storage')
 
 shim = null
 
@@ -27,6 +28,8 @@ Jester =
       cb                {function} (Optional) callback when form was submitted
   ###
   registerShim: (newShim) ->
+    if !newShim?
+      throw new Error("Cannot register null or undefined shim!")
     shim = newShim
 
   ###
