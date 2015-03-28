@@ -4,7 +4,7 @@
 #   If type == 'form-noframe', args has the element IDs of the necessary fields,
 #     and the operation cannot be performed in a frame (must be in the main window).
 #   If type == 'hit', it is sufficient to just visit the URL (e.g. as an Image src).
-Domain =
+ServiceData =
   yahoo:
     login:
       url: 'https://login.yahoo.com/'
@@ -24,5 +24,11 @@ Domain =
       url: 'https://login.yahoo.com/config/login?logout=1'
       type: 'hit'
 
+Service =
+  getInfo: (name) ->
+    data = ServiceData[name]
+    if !data?
+      throw new Error("Unknown service name: #{name}")
+    return data
 
-module.exports = Domain
+module.exports = Service

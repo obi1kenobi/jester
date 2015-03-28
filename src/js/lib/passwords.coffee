@@ -21,24 +21,24 @@ createServiceStorageName = (service) ->
   return "service-#{service}"
 
 Passwords =
-  getPassword: (service, user_password, cb) ->
+  getPassword: (service, userPassword, cb) ->
     serviceData = storage.get createServiceStorageName(service)
     if !serviceData?
       process.nextTick () ->
         cb?(new Error("No stored data for service name: #{service}"))
 
     {ciphertext, salt, iv, authTag} = serviceData
-    cryptoProxies.getOrCreateEncryptionKey user_password, salt, (err, key) ->
+    cryptoProxies.getOrCreateEncryptionKey userPassword, salt, (err, key) ->
       if err?
         cb?(err)
       else
         cryptoProxies.decryptString ciphertext, key, iv, authTag, cb
 
-  setRandomPassword: (service, user_password, cb) ->
+  setRandomPassword: (service, userPassword, cb) ->
     salt = cryptoProxies.generateSalt()
     randomPassword = generateRandomPassword(constants.DEFAULT_PASSWORD_BYTES)
 
-    cryptoProxies.getOrCreateEncryptionKey user_password, salt, (err, key) ->
+    cryptoProxies.getOrCreateEncryptionKey userPassword, salt, (err, key) ->
       if err?
         cb?(err)
       else

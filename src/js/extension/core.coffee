@@ -4,7 +4,7 @@ constants = require('./constants')
 shim      = require('./shim')
 jester    = require('../lib/index')
 
-yahooInfo = require('../lib/config/domain').yahoo
+yahooInfo = require('../lib/config/service').getInfo('yahoo')
 
 messageHandlers = {}
 

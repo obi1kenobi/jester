@@ -1,16 +1,47 @@
-logging   = require('./util/logging')
-logger    = logging.logger(["lib", "index"])
-storage   = require('./storage')
+logging    = require('./util/logging')
+logger      = logging.logger(["lib", "index"])
+passwords   = require('./passwords')
+serviceData = require('./config/service')
 
 shim = null
+
+###
+Use the specified username and password to login into the specified service.
+###
+loginWithUsernameAndPassword = (service, username, password, cb) ->
+  try
+    data = serviceData.getInfo(service)
+  catch err
+    return cb?(err)
+  url = data.url
+  {usernameId, passwordId, submitId} = data.args
+  submitData = {}
+  submitData[usernameId] = username
+  submitData[passwordId] = password
+  shim(url, submitData, submitId, cb)
+
+###
+After the user is already logged in, change their password to a new one.
+###
+changePassword = (service, newPassword, cb) ->
+  try
+    data = serviceData.getInfo(service)
+  catch err
+    return cb?(err)
+  url = data.url
+  {passwordId, confirmPasswordId, submitId} = data.args
+  submitData = {}
+  submitData[passwordId] = newPassword
+  submitData[confirmPasswordId] = newPassword
+  shim(url, submitData, submitId, cb)
 
 ###
 A library that allows client-side-only use of two-factor authentication (2FA).
 
 Terminology:
   username        = the name of the user for the given service
-  user_password   = the password the user is using for the service
-  random_password = the randomly-generated password Jester uses for server login
+  userPassword    = the password the user is using for the service
+  randomPassword  = the randomly-generated password Jester uses for server login
   service         = the service (website) that Jester is being used with
 ###
 Jester =
@@ -38,11 +69,24 @@ Jester =
 
   @param  service          {String}   the service for which to setup 2FA
   @param  username         {String}   the username for which to setup 2FA
-  @param  user_password    {String}   the user's password
+  @param  userPassword     {String}   the user's password
   @param  cb               {function} (Optional) callback when initialization is done
   ###
-  initNewService: (service, username, user_password, cb) ->
-    throw new Error("Not implemented")
+  initNewService: (service, username, userPassword, cb) ->
+    loginWithUsernameAndPassword service, username, userPassword, (err, res) ->
+      if err?
+        logger("Error when initializing on service #{service}:", err)
+        return cb?(err)
+      else
+        passwords.setRandomPassword service, userPassword, (err, randomPassword) ->
+          if err?
+            logger("Error when initializing on service #{service}:", err)
+            return cb?(err)
+          else
+            changePassword service, randomPassword, (err, res) ->
+              if err?
+                logger("Error when initializing on service #{service}:", err)
+              cb?(err, res)
 
   ###
   Get a 2FA token that can be used to login on another device.
@@ -50,35 +94,35 @@ Jester =
 
   @param  service          {String}   the service for which to setup 2FA
   @param  username         {String}   the username for which to setup 2FA
-  @param  user_password    {String}   the user's password
+  @param  userPassword     {String}   the user's password
   @param  cb               {function} (error, 2FAtoken) callback
   ###
-  getToken: (service, username, user_password, cb) ->
+  getToken: (service, username, userPassword, cb) ->
     throw new Error("Not implemented")
 
-  ###
-  Login to the given service using the username, user password and token specified.
+  # ###
+  # Login to the given service using the username, user password and token specified.
 
-  @param  service          {String}   the service for which to setup 2FA
-  @param  username         {String}   the username for which to setup 2FA
-  @param  user_password    {String}   the user's password
-  @param  token            {String}   the 2FA token to use to log in
-  @param  cb               {function} (Optional) callback when login is complete
-  ###
-  login: (service, username, user_password, token, cb) ->
-    throw new Error("Not implemented")
+  # @param  service          {String}   the service for which to setup 2FA
+  # @param  username         {String}   the username for which to setup 2FA
+  # @param  userPassword     {String}   the user's password
+  # @param  token            {String}   the 2FA token to use to log in
+  # @param  cb               {function} (Optional) callback when login is complete
+  # ###
+  # login: (service, username, userPassword, token, cb) ->
+  #   throw new Error("Not implemented")
 
   ###
   Change the user's password for the given service, setting it from
-  user_password to new_user_password.
+  userPassword to newUserPassword.
 
   @param  service           {String}   the service for which to setup 2FA
   @param  username          {String}   the username for which to setup 2FA
-  @param  user_password     {String}   the user's current password
-  @param  new_user_password {String}   the user's new password
+  @param  userPassword      {String}   the user's current password
+  @param  newUserPassword   {String}   the user's new password
   @param  cb                {function} (Optional) callback when the change is complete
   ###
-  changeUserPassword: (service, username, user_password, new_user_password, cb) ->
+  changeUserPassword: (service, username, userPassword, newUserPassword, cb) ->
     throw new Error("Not implemented")
 
 
