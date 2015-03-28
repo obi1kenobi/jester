@@ -156,6 +156,10 @@ browserSetup = () ->
   Proxies.getSecureRandomBytes = (count) ->
     window.crypto.getRandomValues(new Uint8Array(count))
 
+  Proxies.generateSalt = () ->
+    length = constants.SALT_BYTES
+    return Proxies.getSecureRandomBytes(length)
+
 if !window?
   # we're in Node
   nodeSetup()

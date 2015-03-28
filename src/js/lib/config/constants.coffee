@@ -1,5 +1,6 @@
 Constants =
   MIN_PASSWORD_BYTES: 8
+  DEFAULT_PASSWORD_BYTES: 12
   KEY_DERIVATION_ALGORITHM:
     name: 'PBKDF2'
   KEY_DERIVATION_PERMISSIONS: ["deriveKey"]
@@ -11,5 +12,6 @@ Constants =
     length: 256
   ENCRYPTION_PERMISSIONS: ["encrypt", "decrypt"]
   ENCRYPTION_AUTH_TAG_LENGTH: 128
+  SALT_BYTES: 8
 
 module.exports = Constants
