@@ -4,7 +4,8 @@ constants = require('./constants')
 shim      = require('./shim')
 jester    = require('../lib/index')
 
-yahooInfo = require('../lib/config/service').getInfo('yahoo')
+SERVICE_NAME = 'yahoo'
+yahooInfo = require('../lib/config/service').getInfo(SERVICE_NAME)
 
 messageHandlers = {}
 
@@ -27,15 +28,19 @@ messageListener = (message, sender, response) ->
 
 loginMessageHandler = (args) ->
   {username, password} = args
-  elementValues = {}
-  elementValues[yahooInfo.login.args.usernameId] = username
-  elementValues[yahooInfo.login.args.passwordId] = password
-  submitElementId = yahooInfo.login.args.submitId
-  shim yahooInfo.login.url, elementValues, submitElementId, () ->
-    logger("Universal content script finished executing")
+  jester.login SERVICE_NAME, username, password, (err, res) ->
+    if err?
+      logger("Login failed:", err)
+    else
+      logger("Login successful!")
 
 setupMessageHandler = (args) ->
-  logger('Setup message handler not implemented yet')
+  {username, password} = args
+  jester.initNewService SERVICE_NAME, username, password, (err, res) ->
+    if err?
+      logger("Setup failed:", err)
+    else
+      logger("Setup successful!")
 
 genCodeMessageHandler = (args) ->
   logger('GenCode message handler not implemented yet')

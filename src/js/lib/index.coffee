@@ -10,8 +10,9 @@ Use the specified username and password to login into the specified service.
 ###
 loginWithUsernameAndPassword = (service, username, password, cb) ->
   try
-    data = serviceData.getInfo(service)
+    data = serviceData.getInfo(service)?.login
   catch err
+    logger("Service #{service} not found:", err)
     return cb?(err)
   url = data.url
   {usernameId, passwordId, submitId} = data.args
@@ -25,8 +26,9 @@ After the user is already logged in, change their password to a new one.
 ###
 changePassword = (service, newPassword, cb) ->
   try
-    data = serviceData.getInfo(service)
+    data = serviceData.getInfo(service)?.changePwd
   catch err
+    logger("Service #{service} not found:", err)
     return cb?(err)
   url = data.url
   {passwordId, confirmPasswordId, submitId} = data.args
