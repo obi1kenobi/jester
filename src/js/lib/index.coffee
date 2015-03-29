@@ -89,6 +89,26 @@ Jester =
               cb?(err, res)
 
   ###
+  Login locally to the given service using the username specified,
+  and using the saved random password, decrypted with the given user password.
+
+  @param  service          {String}   the service for which to setup 2FA
+  @param  username         {String}   the username for which to setup 2FA
+  @param  userPassword     {String}   the user's password
+  @param  cb               {function} (Optional) callback when login is complete
+  ###
+  login: (service, username, userPassword, cb) ->
+    passwords.getPassword service, userPassword, (err, randomPassword) ->
+      if err?
+        logger("Error when logging into service #{service}:", err)
+        return cb?(err)
+      else
+        loginWithUsernameAndPassword service, username, randomPassword, (err, res) ->
+          if err?
+            logger("Error when logging into service #{service}:", err)
+          cb?(err)
+
+  ###
   Get a 2FA token that can be used to login on another device.
   Should be called on the 2FA device (same one where init() was called).
 
@@ -99,18 +119,6 @@ Jester =
   ###
   getToken: (service, username, userPassword, cb) ->
     throw new Error("Not implemented")
-
-  # ###
-  # Login to the given service using the username, user password and token specified.
-
-  # @param  service          {String}   the service for which to setup 2FA
-  # @param  username         {String}   the username for which to setup 2FA
-  # @param  userPassword     {String}   the user's password
-  # @param  token            {String}   the 2FA token to use to log in
-  # @param  cb               {function} (Optional) callback when login is complete
-  # ###
-  # login: (service, username, userPassword, token, cb) ->
-  #   throw new Error("Not implemented")
 
   ###
   Change the user's password for the given service, setting it from
