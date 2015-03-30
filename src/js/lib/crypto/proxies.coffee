@@ -63,8 +63,8 @@ browserSetup = () ->
 
   generateEncryptionKey = (pbkdf2Key, salt, cb) ->
     generatingAlgorithm =
-      name: constants.KEY_DERIVATION_ALGORITHM
-      salt: salt
+      name: constants.KEY_DERIVATION_ALGORITHM.name
+      salt: stringToBuffer(salt)
       iterations: constants.KEY_DERIVATION_ITERATIONS
       hash: constants.KEY_DERIVATION_HASH
 
@@ -83,33 +83,34 @@ browserSetup = () ->
     if key?
       process.nextTick () -> cb(null, key)
     else
-      # TODO: When Chrome gets PBKDF2 support, use this block instead
-      # getPBKDF2key password, (err, derivedKey) ->
-      #   if err?
-      #     logger "Couldn't derive key from password."
-      #     cb?(err)
-      #   else
-      #     generateEncryptionKey derivedKey, salt, (err, key) ->
-      #       if err?
-      #         logger "Couldn't generate AES key."
-      #         cb?(err)
-      #       else
-      #         encryptionKeyCache[password][salt] = key
-      #         cb?(null, key)
-      #
-      # Until then, the following code will work but will be less secure:
-      getSHA256key password, (err, hash) ->
+      getPBKDF2key password, (err, derivedKey) ->
         if err?
-          logger "Couldn't hash the password: #{JSON.stringify(err)}"
+          logger "Couldn't derive key from password."
           cb?(err)
         else
-          createEncryptionKeyFromHash hash, (err, key) ->
+          generateEncryptionKey derivedKey, salt, (err, key) ->
             if err?
-              logger "Couldn't generate AES key: #{JSON.stringify(err)}"
+              logger "Couldn't generate AES key."
               cb?(err)
             else
               encryptionKeyCache[password][salt] = key
               cb?(null, key)
+      #
+      # This variant is only to be used for testing in browsers that
+      # do not support PBKDF2. THIS CODE IS NOT CONSIDERED SECURE!
+      #
+      # getSHA256key password, (err, hash) ->
+      #   if err?
+      #     logger "Couldn't hash the password: #{JSON.stringify(err)}"
+      #     cb?(err)
+      #   else
+      #     createEncryptionKeyFromHash hash, (err, key) ->
+      #       if err?
+      #         logger "Couldn't generate AES key: #{JSON.stringify(err)}"
+      #         cb?(err)
+      #       else
+      #         encryptionKeyCache[password][salt] = key
+      #         cb?(null, key)
 
   ###
   Callback format is (error, result), where
