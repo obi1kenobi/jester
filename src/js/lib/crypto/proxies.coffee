@@ -18,9 +18,9 @@ browserSetup = () ->
 
   promiseToCallback = (promise, callback) ->
     promise.then (res) ->
-      callback?(null, res)
+      callback(null, res)
     promise.catch (err) ->
-      callback?(err)
+      callback(err)
 
   stringToBuffer = (text) ->
     buffer = new ArrayBuffer(text.length * 2)
@@ -31,26 +31,6 @@ browserSetup = () ->
 
   bufferToString = (buffer) ->
     return String.fromCharCode.apply(null, new Uint16Array(buffer))
-
-  # Temporary method, used until Chrome 42 is released (see TODO below)
-  getSHA256key = (password, cb) ->
-    console.error "crypto:proxies: " + \
-      "WARNING: Using SHA-256 to derive a key from a password, consider using PBKDF2 instead!"
-    passwordBuffer = stringToBuffer(password)
-    algorithm = {name: 'SHA-256'}
-
-    promise = window.crypto.subtle.digest algorithm, passwordBuffer
-
-    promiseToCallback(promise, cb)
-
-  # Temporary method, used until Chrome 42 is released (see TODO below)
-  createEncryptionKeyFromHash = (hash, cb) ->
-    promise = window.crypto.subtle.importKey 'raw', \
-                                             hash, \
-                                             constants.ENCRYPTION_ALGORITHM, \
-                                             false, \
-                                             constants.ENCRYPTION_PERMISSIONS
-    promiseToCallback(promise, cb)
 
   getPBKDF2key = (password, cb) ->
     passwordBuffer = stringToBuffer(password)
@@ -98,6 +78,7 @@ browserSetup = () ->
       #
       # This variant is only to be used for testing in browsers that
       # do not support PBKDF2. THIS CODE IS NOT CONSIDERED SECURE!
+      # Requires the helper methods defined at the bottom of this file.
       #
       # getSHA256key password, (err, hash) ->
       #   if err?
@@ -160,6 +141,25 @@ browserSetup = () ->
   Proxies.generateSalt = () ->
     length = constants.SALT_BYTES
     return Proxies.getSecureRandomBytes(length)
+
+  # Code only used for testing in browsers that do not support PBKDF2.
+  # NOT CONSIDERED SECURE!
+  #
+  # getSHA256key = (password, cb) ->
+  #   console.error "crypto:proxies: " + \
+  #     "WARNING: Using SHA-256 to derive a key from a password, consider using PBKDF2 instead!"
+  #   passwordBuffer = stringToBuffer(password)
+  #   algorithm = {name: 'SHA-256'}
+  #   promise = window.crypto.subtle.digest algorithm, passwordBuffer
+  #   promiseToCallback(promise, cb)
+  #
+  # createEncryptionKeyFromHash = (hash, cb) ->
+  #   promise = window.crypto.subtle.importKey 'raw', \
+  #                                            hash, \
+  #                                            constants.ENCRYPTION_ALGORITHM, \
+  #                                            false, \
+  #                                            constants.ENCRYPTION_PERMISSIONS
+  #   promiseToCallback(promise, cb)
 
 if !window?
   # we're in Node
