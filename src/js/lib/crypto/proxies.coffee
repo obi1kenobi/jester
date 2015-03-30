@@ -140,7 +140,7 @@ browserSetup = () ->
 
   Proxies.generateSalt = () ->
     length = constants.SALT_BYTES
-    return Proxies.getSecureRandomBytes(length)
+    return bufferToString(Proxies.getSecureRandomBytes(length))
 
   # Code only used for testing in browsers that do not support PBKDF2.
   # NOT CONSIDERED SECURE!
