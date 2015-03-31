@@ -64,12 +64,37 @@ testCrypto = () ->
           {iv, authTag, ciphertext} = result
           # optionally, corrupt authTag to see if decryption fails
           # authTag[0] += 1
-          crypto.decryptString ciphertext, key, iv, authTag, (err, plaintext) ->
+          crypto.decryptString ciphertext, key, iv, authTag, (err, plaintext2) ->
             if err?
               logger("Error when decrypting!")
               throw err
             else
-              logger("Decrypted text: #{plaintext}")
+              if plaintext == plaintext2
+                logger("Decryption test success!")
+              else
+                logger("Decryption mismatch: #{plaintext} != #{plaintext2}")
+
+testPasswordStorage = () ->
+  passwords = require('../lib/passwords')
+
+  serviceName  = "service123"
+  userPassword = "predrag123"
+
+  passwords.setRandomPassword serviceName, userPassword, (err, randomPassword) ->
+    if err?
+      logger("Error setting random password!")
+      throw err
+    else
+      passwords.getPassword serviceName, userPassword, (err, password) ->
+        if err?
+          logger("Error getting password!")
+          throw err
+        else
+          if randomPassword != password
+            logger("Password mismatch: #{randomPassword} != #{password}")
+          else
+            logger("Password test success!")
 
 initialize()
 testCrypto()
+testPasswordStorage()

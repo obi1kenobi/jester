@@ -1,5 +1,6 @@
-constants = require('../config/constants')
-logger    = require('../util/logging').logger(['crypto', 'proxies'])
+constants   = require('../config/constants')
+logger      = require('../util/logging').logger(['crypto', 'proxies'])
+stringUtils = require('../util/string')
 
 Proxies =
   ###
@@ -112,6 +113,8 @@ browserSetup = () ->
 
     promise.then (cipherBuffer) ->
       ciphertext = bufferToString(cipherBuffer)
+      iv         = stringUtils.arrayToBase64(iv)
+      authTag    = stringUtils.arrayToBase64(authTag)
       cb?(null, {iv, authTag, ciphertext})
 
     promise.catch (err) ->
@@ -119,6 +122,8 @@ browserSetup = () ->
 
   Proxies.decryptString = (ciphertext, key, iv, authTag, cb) ->
     cipherBuffer = stringToBuffer(ciphertext)
+    iv           = stringUtils.base64ToUint8Array(iv)
+    authTag      = stringUtils.base64ToUint8Array(authTag)
 
     decryptionConfig =
       name: constants.ENCRYPTION_ALGORITHM.name
