@@ -134,7 +134,10 @@ Jester =
   @param  cb                {function} (Optional) callback when the change is complete
   ###
   changeUserPassword: (service, username, userPassword, newUserPassword, cb) ->
-    throw new Error("Not implemented")
+    passwords.changeEncryptionPassword service, userPassword, newUserPassword, (err, res) ->
+      if err?
+        logger("Error when changing password for service #{service}:", err)
+      cb?(err, res)
 
 
 module.exports = Jester

@@ -20,6 +20,20 @@ generateRandomPassword = (length) ->
 createServiceStorageName = (service) ->
   return "service-#{service}"
 
+encryptAndSaveRandomPassword = (service, userPassword, randomPassword, cb) ->
+  salt = cryptoProxies.generateSalt()
+  cryptoProxies.getOrCreateEncryptionKey userPassword, salt, (err, key) ->
+    if err?
+      return cb?(err)
+    else
+      cryptoProxies.encryptString randomPassword, key, (err, result) ->
+        if err?
+          return cb?(err)
+        else
+          result.salt = salt
+          storage.set(createServiceStorageName(service), result)
+          return cb?(null, randomPassword)
+
 Passwords =
   getPassword: (service, userPassword, cb) ->
     serviceData = storage.get createServiceStorageName(service)
@@ -33,26 +47,22 @@ Passwords =
         if err?
           return cb?(err)
         else
-          cryptoProxies.decryptString ciphertext, key, iv, authTag, (err, result) ->
+          cryptoProxies.decryptString ciphertext, key, iv, authTag, (err, randomPassword) ->
             if err?
               logger("Incorrect password or data corrupted!")
-            return cb?(err, result)
+            return cb?(err, randomPassword)
 
   setRandomPassword: (service, userPassword, cb) ->
     salt = cryptoProxies.generateSalt()
     randomPassword = generateRandomPassword(constants.DEFAULT_PASSWORD_BYTES)
+    encryptAndSaveRandomPassword(service, userPassword, randomPassword, cb)
 
-    cryptoProxies.getOrCreateEncryptionKey userPassword, salt, (err, key) ->
+  changeEncryptionPassword: (service, userPassword, newUserPassword, cb) ->
+    Passwords.getPassword service, userPassword, (err, randomPassword) ->
       if err?
         return cb?(err)
       else
-        cryptoProxies.encryptString randomPassword, key, (err, result) ->
-          if err?
-            return cb?(err)
-          else
-            result.salt = salt
-            storage.set(createServiceStorageName(service), result)
-            return cb?(null, randomPassword)
+        encryptAndSaveRandomPassword(service, newUserPassword, randomPassword, cb)
 
 
 module.exports = Passwords
