@@ -1,9 +1,9 @@
+logger = require('./util/logging').logger(['lib', 'storage'])
+
 _set = _get = () ->
   throw new Error("Not overriden -- no implementation found")
 
-Storage = (logging) ->
-  _logger: logging.logger(["jester", "storage"])
-
+Storage = () ->
   ###
   Store a key-value pair. On node.js, key-value pairs are ephemeral and lost
   with the session. In the browser, they are persisted in the HTML5 local store.
@@ -33,9 +33,10 @@ browserSetup = () ->
   _get = (key) ->
     keyString = JSON.stringify({key})
     value = localStorage.getItem(keyString)
-    if value?
-      value = JSON.parse(value).value
-    return value
+    if value?.length > 0
+      return JSON.parse(value).value
+    else
+      return null
 
 if !localStorage?
   # export for node.js
@@ -44,5 +45,4 @@ else
   # export for browser
   browserSetup()
 
-logging = require('./util/logging')
-module.exports = Storage(logging)
+module.exports = Storage()

@@ -1,5 +1,5 @@
 cryptoProxies = require('./crypto/proxies')
-logging       = require('./util/logging')
+logger        = require('./util/logging').logger(['lib', 'passwd'])
 stringUtils   = require('./util/string')
 constants     = require('./config/constants')
 storage       = require('./storage')
@@ -24,15 +24,19 @@ Passwords =
   getPassword: (service, userPassword, cb) ->
     serviceData = storage.get createServiceStorageName(service)
     if !serviceData?
+      logger("No stored data for service name: #{service}")
       process.nextTick () ->
-        cb?(new Error("No stored data for service name: #{service}"))
-
-    {ciphertext, salt, iv, authTag} = serviceData
-    cryptoProxies.getOrCreateEncryptionKey userPassword, salt, (err, key) ->
-      if err?
-        cb?(err)
-      else
-        cryptoProxies.decryptString ciphertext, key, iv, authTag, cb
+        return cb?(new Error("No stored data for service name: #{service}"))
+    else
+      {ciphertext, salt, iv, authTag} = serviceData
+      cryptoProxies.getOrCreateEncryptionKey userPassword, salt, (err, key) ->
+        if err?
+          return cb?(err)
+        else
+          cryptoProxies.decryptString ciphertext, key, iv, authTag, (err, result) ->
+            if err?
+              logger("Incorrect password or data corrupted!")
+            return cb?(err, result)
 
   setRandomPassword: (service, userPassword, cb) ->
     salt = cryptoProxies.generateSalt()
@@ -40,15 +44,15 @@ Passwords =
 
     cryptoProxies.getOrCreateEncryptionKey userPassword, salt, (err, key) ->
       if err?
-        cb?(err)
+        return cb?(err)
       else
         cryptoProxies.encryptString randomPassword, key, (err, result) ->
           if err?
-            cb?(err)
+            return cb?(err)
           else
             result.salt = salt
             storage.set(createServiceStorageName(service), result)
-            cb?(null, randomPassword)
+            return cb?(null, randomPassword)
 
 
 module.exports = Passwords

@@ -63,36 +63,37 @@ browserSetup = () ->
     key = encryptionKeyCache[password][salt]
     if key?
       process.nextTick () -> cb(null, key)
+      return
     else
       getPBKDF2key password, (err, derivedKey) ->
         if err?
           logger "Couldn't derive key from password."
-          cb?(err)
+          return cb?(err)
         else
           generateEncryptionKey derivedKey, salt, (err, key) ->
             if err?
               logger "Couldn't generate AES key."
-              cb?(err)
+              return cb?(err)
             else
               encryptionKeyCache[password][salt] = key
-              cb?(null, key)
-      #
-      # This variant is only to be used for testing in browsers that
-      # do not support PBKDF2. THIS CODE IS NOT CONSIDERED SECURE!
-      # Requires the helper methods defined at the bottom of this file.
-      #
-      # getSHA256key password, (err, hash) ->
-      #   if err?
-      #     logger "Couldn't hash the password: #{JSON.stringify(err)}"
-      #     cb?(err)
-      #   else
-      #     createEncryptionKeyFromHash hash, (err, key) ->
-      #       if err?
-      #         logger "Couldn't generate AES key: #{JSON.stringify(err)}"
-      #         cb?(err)
-      #       else
-      #         encryptionKeyCache[password][salt] = key
-      #         cb?(null, key)
+              return cb?(null, key)
+  #
+  # This variant is only to be used for testing in browsers that
+  # do not support PBKDF2. THIS CODE IS NOT CONSIDERED SECURE!
+  # Requires the helper methods defined at the bottom of this file.
+  #
+  # getSHA256key password, (err, hash) ->
+  #   if err?
+  #     logger "Couldn't hash the password: #{JSON.stringify(err)}"
+  #     cb?(err)
+  #   else
+  #     createEncryptionKeyFromHash hash, (err, key) ->
+  #       if err?
+  #         logger "Couldn't generate AES key: #{JSON.stringify(err)}"
+  #         cb?(err)
+  #       else
+  #         encryptionKeyCache[password][salt] = key
+  #         cb?(null, key)
 
   ###
   Callback format is (error, result), where

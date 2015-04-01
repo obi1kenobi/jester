@@ -35,6 +35,7 @@ changePassword = (service, newPassword, cb) ->
   submitData = {}
   submitData[passwordId] = newPassword
   submitData[confirmPasswordId] = newPassword
+  console.error "Setting password to: #{newPassword}"
   shim(url, submitData, submitId, cb)
 
 ###
@@ -88,7 +89,7 @@ Jester =
             changePassword service, randomPassword, (err, res) ->
               if err?
                 logger("Error when initializing on service #{service}:", err)
-              cb?(err, res)
+              return cb?(err, res)
 
   ###
   Login locally to the given service using the username specified,
@@ -108,7 +109,7 @@ Jester =
         loginWithUsernameAndPassword service, username, randomPassword, (err, res) ->
           if err?
             logger("Error when logging into service #{service}:", err)
-          cb?(err)
+          return cb?(err)
 
   ###
   Get a 2FA token that can be used to login on another device.
