@@ -1,7 +1,9 @@
-logging    = require('./util/logging')
+logging     = require('./util/logging')
 logger      = logging.logger(["lib", "index"])
 passwords   = require('./passwords')
 serviceData = require('./config/service')
+crypto      = require('./crypto/proxies')
+constants   = require('./config/constants')
 
 shim = null
 
@@ -37,6 +39,19 @@ changePassword = (service, newPassword, cb) ->
   submitData[confirmPasswordId] = newPassword
   console.error "Setting password to: #{newPassword}"
   shim(url, submitData, submitId, cb)
+
+###
+Reset the user's password to a new random password,
+both online and in the local registry.
+
+Assumes the user is already logged in.
+###
+resetToRandomPassword = (service, userPassword, cb) ->
+  passwords.setRandomPassword service, userPassword, (err, randomPassword) ->
+    if err?
+      cb?(err)
+    else
+      changePassword service, randomPassword, cb
 
 ###
 A library that allows client-side-only use of two-factor authentication (2FA).
@@ -81,15 +96,10 @@ Jester =
         logger("Error when initializing on service #{service}:", err)
         return cb?(err)
       else
-        passwords.setRandomPassword service, userPassword, (err, randomPassword) ->
+        resetToRandomPassword service, userPassword, (err, res) ->
           if err?
             logger("Error when initializing on service #{service}:", err)
-            return cb?(err)
-          else
-            changePassword service, randomPassword, (err, res) ->
-              if err?
-                logger("Error when initializing on service #{service}:", err)
-              return cb?(err, res)
+          return cb?(err, res)
 
   ###
   Login locally to the given service using the username specified,
@@ -118,10 +128,38 @@ Jester =
   @param  service          {String}   the service for which to setup 2FA
   @param  username         {String}   the username for which to setup 2FA
   @param  userPassword     {String}   the user's password
-  @param  cb               {function} (error, 2FAtoken) callback
+  @param  resetCallback    {function} () callback after the password is reset back
+                                      not called if the other callback returned an error
+  @param  cb               {function} (error, 2FAtoken) callback after the password is set
   ###
-  getToken: (service, username, userPassword, cb) ->
-    throw new Error("Not implemented")
+  getToken: (service, username, userPassword, resetCallback, cb) ->
+    Jester.login service, username, userPassword, (err) ->
+      if err?
+        logger("Error when getting token for service #{service}:", err)
+      else
+        token = crypto.generateOneTimeCode()
+        temporaryPassword = userPassword + token
+        changePassword service, temporaryPassword, (err, res) ->
+          if err?
+            logger("Error when getting token for service #{service}:", err)
+            return cb?(err, res)
+          else
+            console.error 'Temporary password:', temporaryPassword
+
+            # set the timeout for resetting the password before calling the callback
+            setTimeout () ->
+              loginWithUsernameAndPassword service, username, temporaryPassword, (err, res) ->
+                if err?
+                  logger("Error when resetting temp password for service #{service}:", err)
+                  return resetCallback?(err)
+                else
+                  resetToRandomPassword service, userPassword, (err, res) ->
+                    if err?
+                      logger("Error when resetting temp password for service #{service}:", err)
+                    return resetCallback?(err)
+            , constants.TEMPORARY_PASSWORD_VALIDITY_MS
+
+            cb?(null, token)
 
   ###
   Change the user's password for the given service, setting it from

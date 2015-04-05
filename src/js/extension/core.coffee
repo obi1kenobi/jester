@@ -43,7 +43,14 @@ setupMessageHandler = (args) ->
       logger("Setup successful!")
 
 genCodeMessageHandler = (args) ->
-  logger('GenCode message handler not implemented yet')
+  {username, password} = args
+  jester.getToken SERVICE_NAME, username, password, () ->
+    logger("Temporary password expired!")
+  , (err, code) ->
+    if err?
+      logger("Code setup failed:", err)
+    else
+      logger("Password temporarily set to #{password}#{code}")
 
 testCrypto = () ->
   crypto = require('../lib/crypto/proxies')

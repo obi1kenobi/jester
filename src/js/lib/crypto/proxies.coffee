@@ -177,7 +177,13 @@ browserSetup = () ->
         code = sum
         done = true
 
-    return code
+    zeroPaddingCount = digits - (''+code).length
+    codeString = ''
+    for i in [0...zeroPaddingCount]
+      codeString += '0'
+    codeString += code
+
+    return codeString
 
   # Code only used for testing in browsers that do not support PBKDF2.
   # NOT CONSIDERED SECURE!
