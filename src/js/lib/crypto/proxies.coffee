@@ -148,6 +148,37 @@ browserSetup = () ->
     length = constants.SALT_BYTES
     return bufferToString(Proxies.getSecureRandomBytes(length))
 
+  Proxies.generateOneTimeCode = () ->
+    digits = constants.ONE_TIME_CODE_DIGITS
+    codeLimit = Math.pow(10, digits)
+    bits = Math.log2(codeLimit)
+    bytes = Math.ceil(bits / 8)
+
+    if bits > 53
+      throw new Error("Requested code of length #{digits}, " + \
+                      "but it contains more bits than a Javascript Number")
+
+    randomArray = window.crypto.getRandomValues(new Uint8Array(bytes-1))
+    code = 0
+    multiplier = 1
+    for value in randomArray
+      code += value * multiplier
+      multiplier *= 256
+
+    # make sure we don't get a larger code than we want, while preserving
+    # a uniform randomness distribution
+
+    lastByteArray = new Uint8Array(1)
+    done = false
+    while not done
+      lastByte = window.crypto.getRandomValues(lastByteArray)[0]
+      sum = code + (lastByte * multiplier)
+      if sum < codeLimit
+        code = sum
+        done = true
+
+    return code
+
   # Code only used for testing in browsers that do not support PBKDF2.
   # NOT CONSIDERED SECURE!
   #

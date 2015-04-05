@@ -95,6 +95,7 @@ testPasswordStorage = () ->
           else
             logger("Password test success!")
 
+
 initialize()
 testCrypto()
 testPasswordStorage()
