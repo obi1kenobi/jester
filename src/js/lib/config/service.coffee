@@ -23,6 +23,27 @@ ServiceData =
     logout:
       url: 'https://login.yahoo.com/config/login?logout=1'
       type: 'hit'
+  stackExchange:
+    login:
+      url: 'https://openid.stackexchange.com/account/login'
+      type: 'form-noframe'
+      args:
+        usernameId: 'email'
+        passwordId: 'password'
+        submitClass: 'orange'
+    changePwd:
+      url: 'https://openid.stackexchange.com/account/password-reset'
+      type: 'form-noframe'
+      args:
+        passwordId: 'password'
+        confirmPasswordId: 'password2'
+        submitClass: 'orange'
+    logout:
+      url: 'https://openid.stackexchange.com/account/logout'
+      type: 'form-noframe'
+      args:
+        submitClass: 'orange'
+
 
 Service =
   getInfo: (name) ->
