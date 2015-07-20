@@ -37,11 +37,10 @@
     "grunt-mkdir": "~0.1.2",
     "grunt-run": "~0.3.0",
     "mocha": "*",
-    "temp": "0.6.0"
+    "temp": "0.6.0",
+    "mochify": "~2.10.0",
+    "phantomjs": "~1.9.17"
   },
   "license": "MIT",
-  "engines": {
-    "node": ">=0.10.24"
-  },
   "export-symbol": "jester"
 }

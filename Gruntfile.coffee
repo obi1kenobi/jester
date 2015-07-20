@@ -3,23 +3,25 @@ os = require('os')
 
 sourcePath = 'src'
 outputPath = 'bin'
+testPath   = 'test'
 codeDir    = 'js'
 
 # inside bin/
 devDir  = 'unpacked-dev'
 prodDir = 'unpacked-prod'
-tempDir = 'tmp'
+tempDir = 'src'
 
-unpackedDevPath    = "#{outputPath}/#{devDir}"
-unpackedProdPath   = "#{outputPath}/#{prodDir}"
-tempPath           = "#{outputPath}/#{tempDir}"
-tempCodePath       = "#{tempPath}/#{codeDir}"
-codePath           = "#{sourcePath}/#{codeDir}"
-outputCodePath     = "#{outputPath}/#{codeDir}"
+unpackedDevPath    = path.join(outputPath, devDir)
+unpackedProdPath   = path.join(outputPath, prodDir)
+tempPath           = path.join(outputPath, tempDir)
+tempCodePath       = path.join(tempPath, codeDir)
+codePath           = path.join(sourcePath, codeDir)
+outputCodePath     = path.join(outputPath, codeDir)
+compiledTestsPath  = path.join(outputPath, testPath)
 
 packagePath        = 'package.json'
-manifestPath       = "#{sourcePath}/manifest.json"
-manifestOutputPath = "#{unpackedDevPath}/manifest.json"
+manifestPath       = path.join(sourcePath, 'manifest.json')
+manifestOutputPath = path.join(unpackedDevPath, 'manifest.json')
 coffeelintPath     = 'coffeelint.json'
 gruntfilePath      = 'Gruntfile.coffee'
 signingKeyPath     = 'signingKey.pem'
@@ -41,9 +43,9 @@ module.exports = (grunt) ->
 
   for file in nonTestCodeFiles
     jsFile = file.replace('.coffee', '.js')
-    browserfied = "#{unpackedDevPath}/#{codeDir}/#{jsFile}"
-    fileMaps.browserify[browserfied] = "#{tempCodePath}/#{jsFile}"
-    fileMaps.uglify["#{unpackedProdPath}/#{codeDir}/#{jsFile}"] = browserfied
+    browserfied = path.join(unpackedDevPath, codeDir, jsFile)
+    fileMaps.browserify[browserfied] = path.join(tempCodePath, jsFile)
+    fileMaps.uglify[path.join(unpackedProdPath, codeDir, jsFile)] = browserfied
 
   # grunt-contrib-clean
   clean =
@@ -52,19 +54,30 @@ module.exports = (grunt) ->
 
   # grunt-coffeelint
   coffeelint =
-    all:
+    src:
       files:
         src: ["#{sourcePath}/**/*.coffee"]
+      options:
+        configFile: coffeelintPath
+    tests:
+      files:
+        src: ["#{testPath}/**/*.coffee"]
       options:
         configFile: coffeelintPath
 
   # grunt-contrib-coffee
   coffee =
-    files:
+    src:
       expand: true
       cwd: codePath
       src: ['**/*.coffee']
       dest: tempCodePath
+      ext: '.js'
+    tests:
+      expand: true
+      cwd: testPath
+      src: ['**/*.coffee']
+      dest: compiledTestsPath
       ext: '.js'
 
   # grunt-mkdir
@@ -122,9 +135,22 @@ module.exports = (grunt) ->
     crxmakeCommand = './crxmake.sh'
 
   # grunt-run
+  # path normalization needed for Windows support
+  # because Windows CMD doesn't support forward slashes
+  phantomjsPath = path.normalize('../node_modules/.bin/phantomjs')
+  mochifyPath = path.normalize('../node_modules/.bin/mochify')
+  mochifyArgs = ['--phantomjs ' + phantomjsPath,
+                 '--colors',
+                 '--recursive',
+                 '--reporter spec',
+                 '--ui bdd',
+                 '--timeout 2000'].join(' ')
   run =
     tests:
-      exec: []
+      exec: [
+        "cd ./#{outputPath}",
+        "#{mochifyPath} #{mochifyArgs}"
+      ].join(' && ')
     crx:
       exec: [
         "#{crxmakeCommand} #{unpackedProdPath} #{signingKeyPath}",
