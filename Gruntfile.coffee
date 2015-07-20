@@ -114,12 +114,6 @@ module.exports = (grunt) ->
     files: [gruntfilePath, "#{sourcePath}/**"]
     tasks: ['test']
 
-
-  # path normalization needed for Windows support
-  # because Windows CMD doesn't support forward slashes
-  runTestsCmd = path.normalize('../../../node_modules/.bin/mocha')
-  runTestsArgs = '--bail --recursive --reporter spec --ui bdd --timeout 2000 --slow 100'
-
   if os.platform().indexOf('win') == 0
     mvCommand = 'move /Y'
     crxmakeCommand = 'sh crxmake.sh'
@@ -130,10 +124,7 @@ module.exports = (grunt) ->
   # grunt-run
   run =
     tests:
-      exec: [
-        "cd #{path.normalize(tempCodePath)}",
-        "#{runTestsCmd} #{runTestsArgs}"
-      ].join(' && ')
+      exec: []
     crx:
       exec: [
         "#{crxmakeCommand} #{unpackedProdPath} #{signingKeyPath}",

@@ -148,14 +148,17 @@ Jester =
 
             # set the timeout for resetting the password before calling the callback
             setTimeout () ->
-              loginWithUsernameAndPassword service, username, temporaryPassword, (err, res) ->
+              loginWithUsernameAndPassword service, username, \
+                                           temporaryPassword, (err, res) ->
                 if err?
-                  logger("Error when resetting temp password for service #{service}:", err)
+                  logger("Error when resetting temp password for " + \
+                         "service #{service}:", err)
                   return resetCallback?(err)
                 else
                   resetToRandomPassword service, userPassword, (err, res) ->
                     if err?
-                      logger("Error when resetting temp password for service #{service}:", err)
+                      logger("Error when resetting temp password for " + \
+                             "service #{service}:", err)
                     return resetCallback?(err)
             , constants.TEMPORARY_PASSWORD_VALIDITY_MS
 
@@ -172,7 +175,8 @@ Jester =
   @param  cb                {function} (Optional) callback when the change is complete
   ###
   changeUserPassword: (service, username, userPassword, newUserPassword, cb) ->
-    passwords.changeEncryptionPassword service, userPassword, newUserPassword, (err, res) ->
+    passwords.changeEncryptionPassword service, userPassword, \
+                                       newUserPassword, (err, res) ->
       if err?
         logger("Error when changing password for service #{service}:", err)
       cb?(err, res)

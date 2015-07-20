@@ -190,7 +190,8 @@ browserSetup = () ->
   #
   # getSHA256key = (password, cb) ->
   #   console.error "crypto:proxies: " + \
-  #     "WARNING: Using SHA-256 to derive a key from a password, consider using PBKDF2 instead!"
+  #     "WARNING: Using SHA-256 to derive a key from a password, " + \
+  #     "consider using PBKDF2 instead!"
   #   passwordBuffer = stringToBuffer(password)
   #   algorithm = {name: 'SHA-256'}
   #   promise = window.crypto.subtle.digest algorithm, passwordBuffer

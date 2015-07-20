@@ -47,7 +47,8 @@ Passwords =
         if err?
           return cb?(err)
         else
-          cryptoProxies.decryptString ciphertext, key, iv, authTag, (err, randomPassword) ->
+          cryptoProxies.decryptString ciphertext, key, iv, \
+                                      authTag, (err, randomPassword) ->
             if err?
               logger("Incorrect password or data corrupted!")
             return cb?(err, randomPassword)
