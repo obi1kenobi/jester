@@ -3,7 +3,9 @@ StringUtils =
   Converts the given byte array to a base64 encoded string.
   ###
   arrayToBase64: (arr) ->
-    str = String.fromCharCode.apply(null, arr)
+    str = ""
+    for i in [0...arr.length]
+      str += String.fromCharCode(arr[i])
     return window.btoa(str)
 
   ###
@@ -24,7 +26,11 @@ StringUtils =
     return buffer
 
   bufferToString: (buffer) ->
-    return String.fromCharCode.apply(null, new Uint16Array(buffer))
+    str = ""
+    array = new Uint16Array(buffer)
+    for i in [0...array.length]
+      str += String.fromCharCode(array[i])
+    return str
 
 
 module.exports = StringUtils

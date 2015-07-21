@@ -13,7 +13,7 @@ promiseToCallback = (promise, callback) ->
 getPBKDF2 = (text, cb) ->
   buffer = stringUtils.stringToBuffer(text)
   promise = window.crypto.subtle.importKey 'raw', \
-                                            passwordBuffer, \
+                                            buffer, \
                                             constants.KEY_DERIVATION_ALGORITHM, \
                                             false, \
                                             constants.KEY_DERIVATION_PERMISSIONS
@@ -34,7 +34,9 @@ getCryptoKey = (pbkdf2Key, salt, cb) ->
   promiseToCallback(promise, cb)
 
 getSecureRandomBytes = (count) ->
-  window.crypto.getRandomValues(new Uint8Array(count))
+  array = new Uint8Array(count)
+  window.crypto.getRandomValues(array)
+  return array
 
 getOrCreateEncryptionKey = (password, salt, cb) ->
   if !encryptionKeyCache[password]?
@@ -42,15 +44,15 @@ getOrCreateEncryptionKey = (password, salt, cb) ->
 
   key = encryptionKeyCache[password][salt]
   if key?
-    process.nextTick () -> cb(null, key)
+    process.nextTick () -> cb?(null, key)
     return
   else
-    getPBKDF2key password, (err, derivedKey) ->
+    getPBKDF2 password, (err, derivedKey) ->
       if err?
         logger "Couldn't derive key from password.", err
         return cb?(err)
       else
-        generateEncryptionKey derivedKey, salt, (err, key) ->
+        getCryptoKey derivedKey, salt, (err, key) ->
           if err?
             logger "Couldn't generate AES key.", err
             return cb?(err)
@@ -68,6 +70,7 @@ Crypto =
     getOrCreateEncryptionKey password, salt, (err, key) ->
       if err?
         cb?(err)
+        return
       else
         textBuffer = stringUtils.stringToBuffer(plaintext)
         iv = getSecureRandomBytes(16)
@@ -94,6 +97,7 @@ Crypto =
     getOrCreateEncryptionKey password, salt, (err, key) ->
       if err?
         cb?(err)
+        return
       else
         cipherBuffer = stringUtils.stringToBuffer(ciphertext)
         iv           = stringUtils.base64ToUint8Array(iv)

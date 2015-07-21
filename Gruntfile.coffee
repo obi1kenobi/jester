@@ -137,17 +137,19 @@ module.exports = (grunt) ->
   # grunt-run
   # path normalization needed for Windows support
   # because Windows CMD doesn't support forward slashes
-  phantomjsPath = path.normalize('../node_modules/.bin/phantomjs')
   mochifyPath = path.normalize('../node_modules/.bin/mochify')
-  mochifyArgs = ['--phantomjs ' + phantomjsPath,
+  fileUrl = "file://" + process.cwd() + '/src/html/popup.html'
+  mochifyArgs = ['--wd',
+                 '--url ' + fileUrl,
                  '--colors',
                  '--recursive',
                  '--reporter spec',
                  '--ui bdd',
-                 '--timeout 2000'].join(' ')
+                 '--timeout 5000'].join(' ')
   run =
     tests:
       exec: [
+        "cp ./.min-wd ./#{outputPath}/.min-wd",
         "cd ./#{outputPath}",
         "#{mochifyPath} #{mochifyArgs}"
       ].join(' && ')

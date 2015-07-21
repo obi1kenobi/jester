@@ -29,7 +29,17 @@ Storage =
 
   setProfile: (profile, salt, iv, authTag, ciphertext) ->
     profiles = get(PROFILES_KEY)
+    if !profiles?
+      profiles = {}
     profiles[profile] = {salt, iv, authTag, ciphertext}
+    set(PROFILES_KEY, profiles)
+
+  removeProfile: (profile) ->
+    profiles = get(PROFILES_KEY)
+    if !profiles?
+      profiles = {}
+    if profiles[profile]?
+      delete profiles[profile]
     set(PROFILES_KEY, profiles)
 
 

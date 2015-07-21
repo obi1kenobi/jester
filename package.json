@@ -38,8 +38,7 @@
     "grunt-run": "~0.3.0",
     "mocha": "*",
     "temp": "0.6.0",
-    "mochify": "~2.10.0",
-    "phantomjs": "~1.9.17"
+    "mochify": "~2.10.0"
   },
   "license": "MIT",
   "export-symbol": "jester"
