@@ -1,6 +1,7 @@
 {
   "hostname"  : "localhost",
   "port"      : 4444,
+  "timeout"   : 10000,
   "browsers"  : [{
     "name"    : "chrome"
   }]
