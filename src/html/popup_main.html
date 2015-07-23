@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Jester</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" />
+    <link rel="stylesheet" href="../css/jester.css" />
+  </head>
+  <body>
+    <ul class="nav nav-pills" role="tablist" id="navbar">
+      <li role="presentation" id="tabhead-home" class="active">
+        <a href="#">Home</a>
+      </li>
+      <li role="presentation" id="tabhead-addnew">
+        <a href="#addnew">Add new</a>
+      </li>
+      <li role="presentation" id="tabhead-about">
+        <a href="#about">About</a>
+      </li>
+    </ul>
+
+    <div id="tab-profiles-empty" class="col-xs-12 hidden">
+      <p>No profiles yet! Add a profile in the "Add new" tab.</p>
+    </div>
+
+    <div id="tab-profiles" class="col-xs-12">
+      <div id="alert-profiles" class="alert alert-success alert-hidden" role="alert">
+
+      </div>
+
+      <div class="panel panel-default">
+        <div class="panel-heading panel-onhover">
+          <h3 class="panel-title">Google</h3>
+        </div>
+        <div class="panel-body">
+          <div class="col-xs-8 account-name">
+            <h4>account@gmail.com</h4>
+          </div>
+          <div class="col-xs-4 account-token">
+            <ul class="list-group">
+              <li class="list-group-item active">Get Token</li>
+              <li class="list-group-item">123456</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div id="tab-addnew" class="hidden">
+      <div id="alert-addnew" class="alert alert-success alert-hidden" role="alert">
+
+      </div>
+    </div>
+
+    <div id="tab-about" class="hidden">
+      <h3>Jester</h3>
+      <p>An authentication system that enables two-factor authentication using only client-side Javascript, without relying on any server-side support aside from changing one's password.</p>
+      <p>Created by <a href="https://github.com/obi1kenobi/jester">obi1kenobi</a></p>
+    </div>
+
+  </body>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+</html>
