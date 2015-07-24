@@ -5,8 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Jester</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" />
+    <link rel="stylesheet" href="../deps/bootstrap.min.css" />
+    <link rel="stylesheet" href="../deps/bootstrap-theme.min.css" />
     <link rel="stylesheet" href="../css/jester.css" />
   </head>
   <body>
@@ -36,13 +36,13 @@
           <h3 class="panel-title">Google</h3>
         </div>
         <div class="panel-body">
-          <div class="col-xs-8 account-name">
+          <div id="account-name" class="col-xs-8">
             <h4>account@gmail.com</h4>
           </div>
-          <div class="col-xs-4 account-token">
-            <ul class="list-group">
-              <li class="list-group-item active">Get Token</li>
-              <li class="list-group-item">123456</li>
+          <div id="account-token" class="col-xs-4">
+            <div class="list-group">
+              <a href="#" class="list-group-item active">Get token</a>
+              <div class="list-group-item">123456</div>
             </ul>
           </div>
         </div>
@@ -77,7 +77,7 @@
     </div>
 
   </body>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script src="../deps/jquery.min.js"></script>
+  <script src="../deps/bootstrap.min.js"></script>
   <script src="../js/extension/popup_main.js"></script>
 </html>
