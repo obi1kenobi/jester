@@ -1,4 +1,5 @@
 logger = require('../lib/util/logging').logger(['ext', 'popup_main'])
+sender = require('./messaging/ui/sender')
 
 main = () ->
   setupHandlers()
@@ -6,6 +7,7 @@ main = () ->
 setupHandlers = () ->
   setupTabs()
   setupAddNewSelectors()
+  setupAddNewButton()
 
 setupTabs = () ->
   deselectAddNewSelectors = () ->
@@ -43,5 +45,28 @@ setupAddNewSelectors = () ->
 
   $('#addnew-yahoo').click handler
   $('#addnew-stackexchange').click handler
+
+setupAddNewButton = () ->
+  createProfileName = (service, username) ->
+    return "#{service}|#{username}"
+
+  getSelectedServiceName = () ->
+    if $('#addnew-yahoo').hasClass('active')
+      return 'yahoo'
+    else if $('#addnew-stackexchange').hasClass('active')
+      return 'stackexchange'
+    else
+      throw new Error('No service requested!')
+
+  $('#addnew-setup').click () ->
+    username = $('#addnew-username').val()
+    password = $('#addnew-password').val()
+
+    service = getSelectedServiceName()
+    profile = createProfileName(service, username)
+
+    sender.sendAddNewMessage profile, username, password, () ->
+      logger('Response received')
+
 
 $(document).ready(main)
