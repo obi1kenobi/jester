@@ -1,3 +1,11 @@
+html {
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
 body {
   width: 50rem;
   height: 60rem;
@@ -10,19 +18,14 @@ body {
   box-shadow: inset 0 1px 0 rgba(255,255,255,.15), 0 1px 5px rgba(0,0,0,.075);
 }
 
-/*.panel-default > .panel-onhover:hover {
-  background-image: linear-gradient(to bottom, #e8e8e8 0, #dbdbdb 100%);
-  border-color: #c3c3c3;
-}*/
-
 #tab-about > h3 {
   margin: 4rem 2rem 2rem 2rem;
-  color: #606060;
+  color: #505050;
 }
 
 #tab-about > p {
   margin: 4rem 2rem 2rem 2rem;
-  color: #707070;
+  color: #656565;
 }
 
 #tab-profiles-empty > p {
@@ -54,4 +57,26 @@ body {
   padding-left: 1em;
   padding-right: 1em;
   position: relative;
+}
+
+.form-signin .form-control {
+  position: relative;
+  height: auto;
+  box-sizing: border-box;
+  padding: 0.6em;
+}
+
+#addnew-username {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+#addnew-password {
+  border-radius: 0;
+}
+
+#addnew-setup {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
 }
