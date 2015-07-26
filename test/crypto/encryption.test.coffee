@@ -1,8 +1,8 @@
 expect      = require('chai').expect
-crypto      = require('../../src/js/lib/secure_store/crypto')
+crypto      = require('../../src/js/lib/crypto/encryption')
 stringUtils = require('../../src/js/lib/util/string')
 
-describe 'Secure store, crypto', () ->
+describe 'Crypto', () ->
   it 'encrypts and decrypts correctly', (done) ->
     plaintext = "this is the plaintext data"
     password = "my very secret password"

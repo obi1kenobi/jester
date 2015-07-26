@@ -1,7 +1,7 @@
 logger  = require('../util/logging').logger(['lib', 'sstore'])
+crypto  = require('../crypto/encryption')
 random  = require('../crypto/secure_random')
 storage = require('./storage')
-crypto  = require('./crypto')
 
 stringToData = (text) ->
   return JSON.parse(text).val

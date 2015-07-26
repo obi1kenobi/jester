@@ -1,6 +1,6 @@
 expect       = require('chai').expect
-constants    = require('../src/js/lib/config/constants')
-secureRandom = require('../src/js/lib/crypto/secure_random')
+constants    = require('../../src/js/lib/config/constants')
+secureRandom = require('../../src/js/lib/crypto/secure_random')
 
 describe 'Secure Random', () ->
   it 'should return random passwords of correct length', () ->

@@ -1,6 +1,7 @@
-logger      = require('../util/logging').logger(['lib', 'sstore', 'crypto'])
+logger      = require('../util/logging').logger(['lib', 'crypto', 'enc'])
 stringUtils = require('../util/string')
 constants   = require('../config/constants')
+random      = require('./secure_random')
 
 encryptionKeyCache = {}
 
@@ -32,11 +33,6 @@ getCryptoKey = (pbkdf2Key, salt, cb) ->
                                            false, \
                                            constants.ENCRYPTION_PERMISSIONS
   promiseToCallback(promise, cb)
-
-getSecureRandomBytes = (count) ->
-  array = new Uint8Array(count)
-  window.crypto.getRandomValues(array)
-  return array
 
 getOrCreateEncryptionKey = (password, salt, cb) ->
   if !encryptionKeyCache[password]?
@@ -73,8 +69,8 @@ Crypto =
         return
       else
         textBuffer = stringUtils.stringToBuffer(plaintext)
-        iv = getSecureRandomBytes(16)
-        authTag = getSecureRandomBytes(constants.ENCRYPTION_AUTH_TAG_LENGTH)
+        iv = random.getSecureRandomBytes(16)
+        authTag = random.getSecureRandomBytes(constants.ENCRYPTION_AUTH_TAG_LENGTH)
 
         encryptionConfig =
           name: constants.ENCRYPTION_ALGORITHM.name

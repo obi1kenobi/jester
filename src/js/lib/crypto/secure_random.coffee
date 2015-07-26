@@ -2,23 +2,23 @@ logger      = require('../util/logging').logger(['lib', 'crypto', 'srand'])
 stringUtils = require('../util/string')
 constants   = require('../config/constants')
 
-getSecureRandomBytes = (count) ->
-  array = new Uint8Array(count)
-  window.crypto.getRandomValues(array)
-  return array
-
 
 SecureRandom =
+  getSecureRandomBytes: (count) ->
+    array = new Uint8Array(count)
+    window.crypto.getRandomValues(array)
+    return array
+
   getRandomPassword: (length) ->
     if length < constants.MIN_PASSWORD_BYTES
       throw new Error("Password length cannot be less than " + \
                       "#{constants.MIN_PASSWORD_BYTES} bytes, was #{length}.")
-    bytes = getSecureRandomBytes(length)
+    bytes = SecureRandom.getSecureRandomBytes(length)
     return stringUtils.arrayToBase64(bytes)
 
   getRandomSalt: () ->
     length = constants.SALT_BYTES
-    return stringUtils.bufferToString(getSecureRandomBytes(length))
+    return stringUtils.bufferToString(SecureRandom.getSecureRandomBytes(length))
 
   getRandomNumericCode: (digits) ->
     codeLimit = Math.pow(10, digits)
@@ -30,7 +30,7 @@ SecureRandom =
       throw new Error("Requested code of length #{digits}, " + \
                       "but it contains more bits than a Javascript Number")
 
-    randomArray = getSecureRandomBytes(bytes - 1)
+    randomArray = SecureRandom.getSecureRandomBytes(bytes - 1)
     code = 0
     multiplier = 1
     for value in randomArray
@@ -43,7 +43,7 @@ SecureRandom =
 
     done = false
     while not done
-      lastByte = getSecureRandomBytes(1)[0]
+      lastByte = SecureRandom.getSecureRandomBytes(1)[0]
       sum = code + (lastByte * multiplier)
       if sum < codeLimit
         code = sum
