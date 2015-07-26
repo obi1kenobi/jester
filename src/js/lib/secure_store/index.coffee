@@ -1,53 +1,84 @@
 logger  = require('../util/logging').logger(['lib', 'sstore'])
+random  = require('../crypto/secure_random')
 storage = require('./storage')
 crypto  = require('./crypto')
 
 stringToData = (text) ->
-  return JSON.parse(decryptedString).val
+  return JSON.parse(text).val
 
 dataToString = (val) ->
   return JSON.stringify({val})
+
+encrypt = (storePassword, salt, data, cb) ->
+  dataString = dataToString(data)
+  crypto.encryptString dataString, storePassword, salt, cb
+
+decrypt = (storePassword, data, cb) ->
+  {salt, iv, authTag, ciphertext} = data
+  crypto.decryptString ciphertext, storePassword, \
+                       salt, iv, authTag, (err, decryptedString) ->
+    if err?
+      logger("Error decrypting data!", err)
+      cb?(err)
+      return
+    else
+      secretData = stringToData(decryptedString)
+      cb?(null, secretData)
 
 
 SecureStore =
   getProfileNames: () ->
     return storage.getProfileNames()
 
-  get: (profile, storePassword, cb) ->
+  getPublic: (profile) ->
+    return storage.getProfile(profile)?.publicData
+
+  getSecret: (profile, storePassword, cb) ->
     profileData = storage.getProfile(profile)
     if !profileData?
-      process.nextTick () -> cb("Profile #{profile} doesn't exist")
+      process.nextTick () -> cb?("Profile #{profile} doesn't exist")
       return
 
-    {salt, iv, authTag, ciphertext} = profileData
-    crypto.decryptString ciphertext, storePassword, \
-                         salt, iv, authTag, (err, decryptedString) ->
-      if err?
-        logger("Error decrypting data for profile #{profile}", err)
-        cb?(err)
-        return
-      else
-        secretData = stringToData(decryptedString)
-        cb?(null, secretData)
+    decrypt storePassword, profileData, cb
 
-  set: (profile, storePassword, secretData, cb) ->
-    profileData = storage.getProfile(profile)
-    if !profileData?
-      process.nextTick () -> cb("Profile #{profile} doesn't exist")
-      return
+  setProfile: (profile, storePassword, publicData, secretData, cb) ->
+    salt = storage.getProfile(profile)?.salt
 
-    {salt} = profileData
-    dataString = dataToString(secretData)
+    if !salt?
+      salt = random.getRandomSalt()
 
-    crypto.encryptString dataString, storePassword, salt, (err, res) ->
+    encrypt storePassword, salt, secretData, (err, res) ->
       if err?
         logger("Error encrypting data for profile #{profile}", err)
         cb?(err)
         return
       else
         {iv, authTag, ciphertext} = res
-        storage.setProfile(profile, salt, iv, authTag, ciphertext)
+        storage.setProfile(profile, salt, iv, authTag, publicData, ciphertext)
         cb?()
 
+  getConfig: (storePassword, cb) ->
+    configData = storage.getConfig()
+    if !configData?
+      process.nextTick () -> cb?("No config data set.")
+      return
+
+    decrypt storePassword, configData, cb
+
+  setConfig: (storePassword, config, cb) ->
+    salt = storage.getConfig()?.salt
+
+    if !salt?
+      salt = random.getRandomSalt()
+
+    encrypt storePassword, salt, config, (err, res) ->
+      if err?
+        logger("Error encrypting data for profile #{profile}", err)
+        cb?(err)
+        return
+      else
+        {iv, authTag, ciphertext} = res
+        storage.setConfig(salt, iv, authTag, ciphertext)
+        cb?()
 
 module.exports = SecureStore

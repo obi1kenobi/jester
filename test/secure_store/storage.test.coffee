@@ -8,6 +8,9 @@ getRandomBase64 = () ->
   return stringUtils.arrayToBase64(array)
 
 describe 'Secure store, profile storage', () ->
+  beforeEach () ->
+    localStorage.clear()
+
   it 'remembers profiles', () ->
     expect(storage.getProfileNames()).to.eql([])
 
@@ -16,10 +19,14 @@ describe 'Secure store, profile storage', () ->
       salt: "test_salt"
       iv: getRandomBase64()
       authTag: getRandomBase64()
+      publicData:
+        abc: 1234
+        de: "fgh"
       ciphertext: "test_ciphertext"
 
     storage.setProfile(profileName, profileData.salt, profileData.iv, \
-                       profileData.authTag, profileData.ciphertext)
+                       profileData.authTag, profileData.publicData, \
+                       profileData.ciphertext)
 
     expect(storage.getProfile(profileName)).to.eql(profileData)
     expect(storage.getProfileNames()).to.eql([profileName])
@@ -27,3 +34,17 @@ describe 'Secure store, profile storage', () ->
     storage.removeProfile(profileName)
     expect(storage.getProfileNames()).to.eql([])
     expect(storage.getProfile(profileName)).to.not.exist
+
+  it 'remembers config data', () ->
+    expect(storage.getConfig()).to.not.exist
+
+    config =
+      salt: "test_salt"
+      iv: getRandomBase64()
+      authTag: getRandomBase64()
+      ciphertext: "test_ciphertext"
+
+    storage.setConfig(config.salt, config.iv, \
+                      config.authTag, config.ciphertext)
+
+    expect(storage.getConfig()).to.eql(config)

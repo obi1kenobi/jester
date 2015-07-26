@@ -138,7 +138,7 @@ module.exports = (grunt) ->
   # path normalization needed for Windows support
   # because Windows CMD doesn't support forward slashes
   mochifyPath = path.normalize('../node_modules/.bin/mochify')
-  fileUrl = "file://" + process.cwd() + '/src/html/popup.html'
+  fileUrl = "file://" + process.cwd() + '/src/html/popup_main.html'
   mochifyArgs = ['--wd',
                  '--url ' + fileUrl,
                  '--colors',
