@@ -11,6 +11,18 @@ body {
   height: 60rem;
 }
 
+#jester-auth {
+  padding: 2rem;
+  width: 50rem;
+  height: 60rem;
+  margin: 0px;
+}
+
+#jester-auth > div > form {
+  margin: auto;
+  width: 20rem;
+}
+
 #navbar {
   margin-left: 0.1rem;
   margin-bottom: 2rem;

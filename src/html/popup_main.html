@@ -10,70 +10,92 @@
     <link rel="stylesheet" href="../css/jester.css" />
   </head>
   <body>
-    <ul class="nav nav-pills" role="tablist" id="navbar">
-      <li role="presentation" id="tabhead-home" class="active">
-        <a href="#">Home</a>
-      </li>
-      <li role="presentation" id="tabhead-addnew">
-        <a href="#addnew">Add new</a>
-      </li>
-      <li role="presentation" id="tabhead-about">
-        <a href="#about">About</a>
-      </li>
-    </ul>
-
-    <div id="tab-profiles" class="tab col-xs-12">
-      <div id="alert-profiles" class="alert alert-success alert-hidden" role="alert">
-
+    <div id="jester-auth" class="jumbotron">
+      <h2>Jester</h2>
+      <div id="jester-enter" class="hidden">
+        <p>Please enter your Jester unlock password.</p>
+        <form id="auth-creds" class="form-signin">
+          <input type="password" id="auth-password" class="form-control" placeholder="password" required>
+          <button type="button" id="auth-submit" class="btn btn-primary btn-block">Unlock</button>
+        </form>
       </div>
 
-      <div id="profiles-empty" class="hidden">
-        <p>No profiles yet! Add a profile in the "Add new" tab.</p>
+      <div id="jester-setup" class="hidden">
+        <p>Jester stores all your sensitive data encrypted, based on a password of your choice. Please set up your Jester unlock password now.</p>
+        <form id="auth-setup-creds" class="form-signin">
+          <input type="password" id="auth-setup-password" class="form-control" placeholder="password" required>
+          <input type="password" id="auth-setup-confpassword" class="form-control" placeholder="confirm password" required>
+          <button type="button" id="auth-setup-submit" class="btn btn-primary btn-block">Set up Jester</button>
+        </form>
       </div>
+    </div>
 
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">Google</h3>
+    <div id="jester-authed" class="container hidden">
+      <ul class="nav nav-pills" role="tablist" id="navbar">
+        <li role="presentation" id="tabhead-home" class="active">
+          <a href="#">Home</a>
+        </li>
+        <li role="presentation" id="tabhead-addnew">
+          <a href="#addnew">Add new</a>
+        </li>
+        <li role="presentation" id="tabhead-about">
+          <a href="#about">About</a>
+        </li>
+      </ul>
+
+      <div id="tab-profiles" class="tab col-xs-12">
+        <div id="alert-profiles" class="alert alert-success alert-hidden" role="alert">
+
         </div>
-        <div class="panel-body">
-          <div id="account-name" class="col-xs-8">
-            <h4>account@gmail.com</h4>
+
+        <div id="profiles-empty" class="hidden">
+          <p>No profiles yet! Add a profile in the "Add new" tab.</p>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Google</h3>
           </div>
-          <div id="account-token" class="col-xs-4">
-            <div class="list-group">
-              <a href="#" class="list-group-item active">Get token</a>
-              <div class="list-group-item">123456</div>
+          <div class="panel-body">
+            <div id="account-name" class="col-xs-8">
+              <h4>account@gmail.com</h4>
+            </div>
+            <div id="account-token" class="col-xs-4">
+              <div class="list-group">
+                <a href="#" class="list-group-item active">Get token</a>
+                <div class="list-group-item">123456</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div id="tab-addnew" class="tab col-xs-12 hidden">
-      <div id="alert-addnew" class="alert alert-success alert-hidden" role="alert">
+      <div id="tab-addnew" class="tab col-xs-12 hidden">
+        <div id="alert-addnew" class="alert alert-success alert-hidden" role="alert">
 
-      </div>
+        </div>
 
-      <div class="col-xs-4">
-        <div id="addnew-selector" class="list-group">
-          <a href="#" id="addnew-yahoo" class="list-group-item">Yahoo!</a>
-          <a href="#" id="addnew-stackexchange" class="list-group-item">StackExchange</a>
+        <div class="col-xs-4">
+          <div id="addnew-selector" class="list-group">
+            <a href="#" id="addnew-yahoo" class="list-group-item">Yahoo!</a>
+            <a href="#" id="addnew-stackexchange" class="list-group-item">StackExchange</a>
+          </div>
+        </div>
+
+        <div class="col-xs-8">
+          <form id="addnew-creds" class="form-signin hidden">
+            <input type="text" id="addnew-username" class="form-control" placeholder="username" required>
+            <input type="password" id="addnew-password" class="form-control" placeholder="password" required>
+            <button type="button" id="addnew-setup" class="btn btn-primary btn-block">Set up</button>
+          </form>
         </div>
       </div>
 
-      <div class="col-xs-8">
-        <form id="addnew-creds" class="form-signin hidden">
-          <input type="text" id="addnew-username" class="form-control" placeholder="username" required>
-          <input type="password" id="addnew-password" class="form-control" placeholder="password" required>
-          <button type="button" id="addnew-setup" class="btn btn-primary btn-block">Set up</button>
-        </div>
+      <div id="tab-about" class="tab col-xs-12 hidden">
+        <h3>Jester</h3>
+        <p>An authentication system that enables two-factor authentication using only client-side Javascript, without relying on any server-side support aside from changing one's password.</p>
+        <p>Created by <a href="https://github.com/obi1kenobi/jester">obi1kenobi</a></p>
       </div>
-    </div>
-
-    <div id="tab-about" class="tab col-xs-12 hidden">
-      <h3>Jester</h3>
-      <p>An authentication system that enables two-factor authentication using only client-side Javascript, without relying on any server-side support aside from changing one's password.</p>
-      <p>Created by <a href="https://github.com/obi1kenobi/jester">obi1kenobi</a></p>
     </div>
 
   </body>
