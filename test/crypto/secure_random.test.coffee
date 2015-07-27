@@ -2,7 +2,7 @@ expect       = require('chai').expect
 constants    = require('../../src/js/lib/config/constants')
 secureRandom = require('../../src/js/lib/crypto/secure_random')
 
-describe 'Secure Random', () ->
+describe 'Secure random', () ->
   it 'should return random passwords of correct length', () ->
     minBytes = constants.MIN_PASSWORD_BYTES
 

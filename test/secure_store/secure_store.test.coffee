@@ -53,8 +53,12 @@ describe 'Secure store', () ->
       abc: 12
       de: "1234"
 
+    expect(secureStore.configExists()).to.eql(false)
+
     secureStore.setConfig password, config, (err) ->
       expect(err).to.not.exist
+
+      expect(secureStore.configExists()).to.eql(true)
 
       secureStore.getConfig password, (err, res) ->
         expect(err).to.not.exist

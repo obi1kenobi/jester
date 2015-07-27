@@ -81,4 +81,7 @@ SecureStore =
         storage.setConfig(salt, iv, authTag, ciphertext)
         cb?()
 
+  configExists: () ->
+    return storage.getConfig()?
+
 module.exports = SecureStore
