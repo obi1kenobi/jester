@@ -45,11 +45,4 @@ ServiceData =
         submitClass: 'orange'
 
 
-Service =
-  getInfo: (name) ->
-    data = ServiceData[name]
-    if !data?
-      throw new Error("Unknown service name: #{name}")
-    return data
-
-module.exports = Service
+module.exports = ServiceData

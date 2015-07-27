@@ -6,13 +6,13 @@ popupAddNew     = require('./addnew')
 
 main = () ->
   setupTabs()
-  popupAddNew.setup()
   popupAuth.setup sender, (err, password) ->
     if err?
       logger("Unexpected error returned from setupAuth", err)
       return
     else
       popupProfiles.populate(sender, password)
+      popupAddNew.setup(sender, password)
 
 setupTabs = () ->
   deselectAddNewSelectors = () ->

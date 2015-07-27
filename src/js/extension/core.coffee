@@ -2,6 +2,7 @@ logger      = require('../lib/util/logging').logger(['ext', 'core'])
 receiver    = require('./messaging/ui/receiver')
 types       = require('./messaging/ui/message_types')
 secureStore = require('../lib/secure_store')
+services    = require('./services')
 
 init = () ->
   setupHandlers()
@@ -10,6 +11,11 @@ setupHandlers = () ->
   addNewHandler = ({profile, storePassword, service, username, password}, \
                    sendResponse) ->
     logger('received add-new message -- not implemented')
+
+    # TODO(predrag): temporary call for testing purposes
+    services.login service, username, password, (err, res) ->
+      logger("login cb, err=#{err}, res=#{res}")
+
     process.nextTick () ->
       sendResponse()
 

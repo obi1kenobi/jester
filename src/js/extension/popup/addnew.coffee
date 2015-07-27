@@ -9,31 +9,32 @@ setupAddNewSelectors = () ->
   $('#addnew-yahoo').click handler
   $('#addnew-stackexchange').click handler
 
-setupAddNewButton = () ->
-  $('#addnew-setup').click addNewClicked
+setupAddNewButton = (sender) ->
+  $('#addnew-setup').click createAddNewClickedHandler(sender)
 
 getSelectedServiceName = () ->
   if $('#addnew-yahoo').hasClass('active')
     return 'yahoo'
   else if $('#addnew-stackexchange').hasClass('active')
-    return 'stackexchange'
+    return 'stackExchange'
   else
     throw new Error('No service requested!')
 
-addNewClicked = () ->
-  username = $('#addnew-username').val()
-  password = $('#addnew-password').val()
+createAddNewClickedHandler = (sender, storePassword) ->
+  return () ->
+    username = $('#addnew-username').val()
+    password = $('#addnew-password').val()
 
-  service = getSelectedServiceName()
-  profile = uuid.v1()
+    service = getSelectedServiceName()
+    profile = uuid.v1()
 
-  sender.sendAddNewMessage profile, username, password, () ->
-    logger('Response received')
+    sender.sendAddNewMessage profile, storePassword, service, username, password, () ->
+      logger('Response received')
 
 
 AddNew =
-  setup: () ->
+  setup: (sender, storePassword) ->
     setupAddNewSelectors()
-    setupAddNewButton()
+    setupAddNewButton(sender, storePassword)
 
 module.exports = AddNew
