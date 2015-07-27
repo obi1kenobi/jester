@@ -26,7 +26,7 @@ getSetupSubmitHandler = (sender, authFinishedCb) ->
         return
       else
         authCleanup()
-        authFinishedCb()
+        authFinishedCb(null, password)
         return
 
 getAuthSubmitHandler = (sender, authFinishedCb) ->
@@ -43,7 +43,7 @@ getAuthSubmitHandler = (sender, authFinishedCb) ->
         return false
       else
         authCleanup()
-        authFinishedCb()
+        authFinishedCb(null, password)
         return
 
 

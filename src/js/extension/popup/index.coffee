@@ -1,18 +1,22 @@
-logger    = require('../../lib/util/logging').logger(['ext', 'popup_main'])
-sender    = require('../messaging/ui/sender')
-popupAuth = require('./auth')
+logger          = require('../../lib/util/logging').logger(['ext', 'popup_main'])
+sender          = require('../messaging/ui/sender')
+popupAuth       = require('./auth')
+popupProfiles   = require('./profiles')
 
 main = () ->
   setupHandlers()
 
 setupHandlers = () ->
-  popupAuth.setupAuth(sender, populateProfiles)
+  popupAuth.setupAuth sender, (err, password) ->
+    if err?
+      logger("Unexpected error returned from setupAuth", err)
+      return
+    else
+      popupProfiles.populate(sender, password)
+
   setupTabs()
   setupAddNewSelectors()
   setupAddNewButton()
-
-populateProfiles = () ->
-  logger("Populating profiles...")
 
 setupTabs = () ->
   deselectAddNewSelectors = () ->

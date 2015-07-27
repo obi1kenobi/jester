@@ -21,7 +21,7 @@ messageListener = (message, sender, sendResponse) ->
 Receiver =
   # handlers is an Object containing a handler for each message type
   # handler format:
-  #   ADD_NEW = ({profile, storePassword, username, password}, sendResponse) ->
+  #   ADD_NEW = ({profile, storePassword, service, username, password}, sendResponse) ->
   #   GET_TOKEN = ({profile, storePassword}, sendResponse) ->
   #   GET_PROFILES = ({storePassword}, sendResponse) ->
   #   CONFIG_EXISTS = ({}, sendResponse) ->

@@ -11,7 +11,7 @@ sendMessage = (type, args, cb) ->
 
 
 Sender =
-  sendAddNewMessage: (profile, storePassword, username, password, cb) ->
+  sendAddNewMessage: (profile, storePassword, service, username, password, cb) ->
     args = {profile, storePassword, username, password}
     type = types.ADD_NEW
 

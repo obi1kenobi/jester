@@ -7,7 +7,8 @@ init = () ->
   setupHandlers()
 
 setupHandlers = () ->
-  addNewHandler = ({profile, storePassword, username, password}, sendResponse) ->
+  addNewHandler = ({profile, storePassword, service, username, password}, \
+                   sendResponse) ->
     logger('received add-new message -- not implemented')
     process.nextTick () ->
       sendResponse()
@@ -18,9 +19,21 @@ setupHandlers = () ->
       sendResponse()
 
   getProfilesHandler = ({storePassword}, sendResponse) ->
-    logger('received get-profiles message -- not implemented')
-    process.nextTick () ->
-      sendResponse()
+    logger('received get-profiles message')
+    response = {}
+    profiles = secureStore.getProfileNames()
+
+    async.map profiles, (profile, done) ->
+      secureStore.getSecret(profile, storePassword, done)
+    , (err, result) ->
+      if err?
+        return sendResponse(err)
+      else
+        for i in [0...profiles.length]
+          {service, username} = result[i]
+          response[profiles[i]] = {service, username}
+
+        sendResponse(null, response)
 
   configExistsHandler = ({}, sendResponse) ->
     logger('received config-exists message')

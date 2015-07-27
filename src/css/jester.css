@@ -52,7 +52,7 @@ body {
   margin: -0.5rem 0 1.5rem 0;
 }
 
-.panel-body > div#account-name {
+.panel-body > div.account-name {
   vertical-align: middle;
   display: inline-block;
   padding-left: 2em;
@@ -61,7 +61,7 @@ body {
   position: relative;
 }
 
-.panel-body > div#account-token {
+.panel-body > div.account-token {
   vertical-align: middle;
   display: inline-block;
   text-align: center;
