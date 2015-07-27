@@ -70,35 +70,34 @@
         </div> -->
 
       </div>
-    </div>
 
-    <div id="tab-addnew" class="tab col-xs-12 hidden">
-      <div id="alert-addnew" class="alert alert-success alert-hidden" role="alert">
+      <div id="tab-addnew" class="tab col-xs-12 hidden">
+        <div id="alert-addnew" class="alert alert-success alert-hidden" role="alert">
 
-      </div>
+        </div>
 
-      <div class="col-xs-4">
-        <div id="addnew-selector" class="list-group">
-          <a href="#" id="addnew-yahoo" class="list-group-item">Yahoo!</a>
-          <a href="#" id="addnew-stackexchange" class="list-group-item">StackExchange</a>
+        <div class="col-xs-4">
+          <div id="addnew-selector" class="list-group">
+            <a href="#" id="addnew-yahoo" class="list-group-item">Yahoo!</a>
+            <a href="#" id="addnew-stackexchange" class="list-group-item">StackExchange</a>
+          </div>
+        </div>
+
+        <div class="col-xs-8">
+          <form id="addnew-creds" class="form-signin hidden">
+            <input type="text" id="addnew-username" class="form-control" placeholder="username" required>
+            <input type="password" id="addnew-password" class="form-control" placeholder="password" required>
+            <button type="button" id="addnew-setup" class="btn btn-primary btn-block">Set up</button>
+          </form>
         </div>
       </div>
 
-      <div class="col-xs-8">
-        <form id="addnew-creds" class="form-signin hidden">
-          <input type="text" id="addnew-username" class="form-control" placeholder="username" required>
-          <input type="password" id="addnew-password" class="form-control" placeholder="password" required>
-          <button type="button" id="addnew-setup" class="btn btn-primary btn-block">Set up</button>
-        </form>
+      <div id="tab-about" class="tab col-xs-12 hidden">
+        <h3>Jester</h3>
+        <p>An authentication system that enables two-factor authentication using only client-side Javascript, without relying on any server-side support aside from changing one's password.</p>
+        <p>Created by <a href="https://github.com/obi1kenobi/jester">obi1kenobi</a></p>
       </div>
     </div>
-
-    <div id="tab-about" class="tab col-xs-12 hidden">
-      <h3>Jester</h3>
-      <p>An authentication system that enables two-factor authentication using only client-side Javascript, without relying on any server-side support aside from changing one's password.</p>
-      <p>Created by <a href="https://github.com/obi1kenobi/jester">obi1kenobi</a></p>
-    </div>
-
   </body>
   <script src="../deps/jquery.min.js"></script>
   <script src="../deps/bootstrap.min.js"></script>
