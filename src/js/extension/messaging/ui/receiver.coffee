@@ -4,8 +4,6 @@ types     = require('./message_types')
 messageHandlers = {}
 
 messageListener = (message, sender, sendResponse) ->
-  logger("Received message from #{JSON.stringify(sender)}")
-
   {type, args} = message
   if !messageHandlers[type]?
     msg = "Unexpected message type #{type} with args #{JSON.stringify(args)}"
