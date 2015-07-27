@@ -48,7 +48,7 @@ getAuthSubmitHandler = (sender, authFinishedCb) ->
 
 
 Auth =
-  setupAuth: (sender, authFinishedCb) ->
+  setup: (sender, authFinishedCb) ->
     sender.sendConfigExistsMessage (err, exists) ->
       if err?
         logger('Received error on sendConfigExistsMessage', err)
