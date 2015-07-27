@@ -10,26 +10,25 @@ setupAddNewSelectors = () ->
   $('#addnew-stackexchange').click handler
 
 setupAddNewButton = () ->
-  createProfileName = (service, username) ->
-    return "#{service}|#{username}"
+  $('#addnew-setup').click addNewClicked
 
-  getSelectedServiceName = () ->
-    if $('#addnew-yahoo').hasClass('active')
-      return 'yahoo'
-    else if $('#addnew-stackexchange').hasClass('active')
-      return 'stackexchange'
-    else
-      throw new Error('No service requested!')
+getSelectedServiceName = () ->
+  if $('#addnew-yahoo').hasClass('active')
+    return 'yahoo'
+  else if $('#addnew-stackexchange').hasClass('active')
+    return 'stackexchange'
+  else
+    throw new Error('No service requested!')
 
-  $('#addnew-setup').click () ->
-    username = $('#addnew-username').val()
-    password = $('#addnew-password').val()
+addNewClicked = () ->
+  username = $('#addnew-username').val()
+  password = $('#addnew-password').val()
 
-    service = getSelectedServiceName()
-    profile = createProfileName(service, username)
+  service = getSelectedServiceName()
+  profile = uuid.v1()
 
-    sender.sendAddNewMessage profile, username, password, () ->
-      logger('Response received')
+  sender.sendAddNewMessage profile, username, password, () ->
+    logger('Response received')
 
 
 AddNew =
