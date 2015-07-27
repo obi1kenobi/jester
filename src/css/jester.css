@@ -23,6 +23,13 @@ body {
   width: 20rem;
 }
 
+#jester-authed {
+  width: 50rem;
+  height: 60rem;
+  margin: 0px;
+  padding: 0px;
+}
+
 #navbar {
   margin-left: 0.1rem;
   margin-bottom: 2rem;
@@ -40,7 +47,7 @@ body {
   color: #656565;
 }
 
-#tab-profiles-empty > p {
+#profiles-empty > p {
   margin: 6rem 2rem 2rem 2rem;
   color: #909090;
   text-align: center;
