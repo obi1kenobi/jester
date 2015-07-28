@@ -9,8 +9,8 @@ setupAddNewSelectors = () ->
   $('#addnew-yahoo').click handler
   $('#addnew-stackexchange').click handler
 
-setupAddNewButton = (sender) ->
-  $('#addnew-setup').click createAddNewClickedHandler(sender)
+setupAddNewButton = (sender, storePassword) ->
+  $('#addnew-setup').click createAddNewClickedHandler(sender, storePassword)
 
 getSelectedServiceName = () ->
   if $('#addnew-yahoo').hasClass('active')
@@ -36,5 +36,6 @@ AddNew =
   setup: (sender, storePassword) ->
     setupAddNewSelectors()
     setupAddNewButton(sender, storePassword)
+
 
 module.exports = AddNew

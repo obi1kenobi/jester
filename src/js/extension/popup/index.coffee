@@ -8,7 +8,7 @@ main = () ->
   setupTabs()
   popupAuth.setup sender, (err, password) ->
     if err?
-      logger("Unexpected error returned from setupAuth", err)
+      logger("Unexpected error returned from auth setup", err)
       return
     else
       popupProfiles.populate(sender, password)

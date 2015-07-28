@@ -159,7 +159,12 @@ ProfileManager =
           isUsingRandomPassword(profile, storePassword, tokenResetCb)
       (done) ->
         isUsingToken(profile, storePassword, done)
-    ], tokenSetCb
+    ], (err, res) ->
+      if err?
+        tokenSetCb(err)
+        return
+
+      tokenSetCb(null, token)
 
 
 module.exports = ProfileManager

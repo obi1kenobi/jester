@@ -36,7 +36,7 @@ changePassword = (service, newPassword, cb) ->
 loginAndChangePassword = (service, username, currentPassword, newPassword, cb) ->
   async.series [
     (done) ->
-      login(service, username, userPassword, done)
+      login(service, username, currentPassword, done)
     (done) ->
       changePassword(service, newPassword, done)
   ], (err) ->

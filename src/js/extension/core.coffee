@@ -2,7 +2,6 @@ logger      = require('../lib/util/logging').logger(['ext', 'core'])
 receiver    = require('./messaging/ui/receiver')
 types       = require('./messaging/ui/message_types')
 secureStore = require('../lib/secure_store')
-services    = require('./services')
 profiles    = require('./profiles')
 
 init = () ->
@@ -11,19 +10,14 @@ init = () ->
 setupHandlers = () ->
   addNewHandler = ({profile, storePassword, service, username, password}, \
                    sendResponse) ->
-    logger('received add-new message -- not implemented')
-
-    # TODO(predrag): temporary call for testing purposes
-    services.login service, username, password, (err, res) ->
-      logger("login cb, err=#{err}, res=#{res}")
-
-    process.nextTick () ->
-      sendResponse()
+    logger('received add-new message')
+    profiles.createNew(profile, storePassword, service, \
+                       username, password, sendResponse)
 
   getTokenHandler = ({profile, storePassword}, sendResponse) ->
-    logger('received get-token message -- not implemented')
-    process.nextTick () ->
-      sendResponse()
+    logger('received get-token message')
+    profiles.getToken profile, storePassword, sendResponse, (err, res) ->
+      logger("Token reset cb, err=#{err} res=#{res}")
 
   getProfilesHandler = ({storePassword}, sendResponse) ->
     logger('received get-profiles message')
