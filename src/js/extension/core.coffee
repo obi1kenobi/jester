@@ -3,6 +3,7 @@ receiver    = require('./messaging/ui/receiver')
 types       = require('./messaging/ui/message_types')
 secureStore = require('../lib/secure_store')
 services    = require('./services')
+profiles    = require('./profiles')
 
 init = () ->
   setupHandlers()
@@ -26,20 +27,7 @@ setupHandlers = () ->
 
   getProfilesHandler = ({storePassword}, sendResponse) ->
     logger('received get-profiles message')
-    response = {}
-    profiles = secureStore.getProfileNames()
-
-    async.map profiles, (profile, done) ->
-      secureStore.getSecret(profile, storePassword, done)
-    , (err, result) ->
-      if err?
-        return sendResponse(err)
-      else
-        for i in [0...profiles.length]
-          {service, username} = result[i]
-          response[profiles[i]] = {service, username}
-
-        sendResponse(null, response)
+    profiles.getAll(storePassword, sendResponse)
 
   configExistsHandler = ({}, sendResponse) ->
     logger('received config-exists message')
