@@ -33,13 +33,19 @@ Shim =
     chrome.tabs.executeScript tabid, executeOptions, () ->
       submitOptions = {elementValues, submitElementId}
 
-      chrome.tabs.sendMessage tabid, submitOptions, cb
+      chrome.tabs.sendMessage tabid, submitOptions, () ->
+        # TODO(predrag): Figure out a better way to detect end of auth
+        #                processing, and remove this timeout
+        setTimeout cb, 1500
 
   releaseAllTabs: (cb) ->
     if windowIds.length == 0
       return cb('No tabs to release!')
 
-    async.each windowIds, (id, next) ->
+    oldWindowIds = windowIds
+    windowIds = []
+    logger("Releasing windows!")
+    async.each oldWindowIds, (id, next) ->
       chrome.windows.remove id, next
     , cb
 
