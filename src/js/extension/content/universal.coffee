@@ -7,16 +7,27 @@ logger = logging.logger(['ext', 'cont', 'universal'])
 
 logger("Universal content script executing!")
 
-executeLogin = (elementValues, submitElementId, cb) ->
+
+submit = (elementValues, submitElementId, cb) ->
   for id, val of elementValues
     document.getElementById(id).value = val
 
   document.getElementById(submitElementId).click()
 
   logger("Submitted form!")
-  cb?()
+
+  window.onbeforeunload = () ->
+    cb?()
+
+    # don't prevent the unload
+    return null
+
 
 chrome.runtime.onMessage.addListener (message, sender, response) ->
   logger("Processing new message!")
   {elementValues, submitElementId} = message
-  executeLogin(elementValues, submitElementId, response)
+
+  submit(elementValues, submitElementId, response)
+
+  # indicate async response by returning true
+  return true
