@@ -15,6 +15,14 @@ Shim =
         state: 'minimized'
 
       chrome.windows.create windowOptions, (windowObj) ->
+        # the below is disabled because it closes the popup tab
+        # HACK(predrag): Chrome doesn't seem to respect 'minimized'
+        #                or focused: false when creating new window,
+        #                but does respect them when updating the window
+        # updateOptions =
+        #   focused: false
+        #   state: 'minimized'
+        # chrome.windows.update windowObj.id, updateOptions, () ->
         windowIds.push(windowObj.id)
         return cb(null, windowObj.tabs[0].id)
     else
