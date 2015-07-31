@@ -1,4 +1,4 @@
-logger = require('../../lib/util/logging').logger(['ext', 'popup', 'auth'])
+logger = require('../../lib/util/logging').logger(['ext', 'ux', 'auth'])
 
 authCleanup = () ->
   logger("Cleaning up auth...")

@@ -1,7 +1,8 @@
-logger = require('../../lib/util/logging').logger(['ext', 'popup', 'addnew'])
+logger = require('../../lib/util/logging').logger(['ext', 'ux', 'addnew'])
 
-setupAddNewSelectors = () ->
+setupAddNewSelectors = (resetUnauthTimer) ->
   handler = () ->
+    resetUnauthTimer()
     $(this).siblings().removeClass('active')
     $(this).addClass('active')
     $('#addnew-creds').removeClass('hidden')
@@ -9,8 +10,9 @@ setupAddNewSelectors = () ->
   $('#addnew-yahoo').click handler
   $('#addnew-stackexchange').click handler
 
-setupAddNewButton = (sender, storePassword) ->
-  $('#addnew-setup').click createAddNewClickedHandler(sender, storePassword)
+setupAddNewButton = (sender, storePassword, resetUnauthTimer) ->
+  handler = createAddNewClickedHandler(sender, storePassword, resetUnauthTimer)
+  $('#addnew-setup').click(handler)
 
 getSelectedServiceName = () ->
   if $('#addnew-yahoo').hasClass('active')
@@ -20,8 +22,9 @@ getSelectedServiceName = () ->
   else
     throw new Error('No service requested!')
 
-createAddNewClickedHandler = (sender, storePassword) ->
+createAddNewClickedHandler = (sender, storePassword, resetUnauthTimer) ->
   return () ->
+    resetUnauthTimer()
     username = $('#addnew-username').val()
     password = $('#addnew-password').val()
 
@@ -33,9 +36,9 @@ createAddNewClickedHandler = (sender, storePassword) ->
 
 
 AddNew =
-  setup: (sender, storePassword) ->
-    setupAddNewSelectors()
-    setupAddNewButton(sender, storePassword)
+  setup: (sender, storePassword, resetUnauthTimer) ->
+    setupAddNewSelectors(resetUnauthTimer)
+    setupAddNewButton(sender, storePassword, resetUnauthTimer)
 
 
 module.exports = AddNew
