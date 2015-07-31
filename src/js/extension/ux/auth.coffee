@@ -16,10 +16,15 @@ getSetupSubmitHandler = (sender, authFinishedCb) ->
 
     if password != confirmPassword
       logger('Entered passwords do not match!')
-      # TODO(predrag): add visual indication of password mismatch
+      $('#auth-setup-password').addClass('form-control-wrong-input')
+      $('#auth-setup-confpassword').addClass('form-control-wrong-input')
       return false
 
     logger('Passwords match, setting up...')
+
+    $('#auth-setup-password').removeClass('form-control-wrong-input')
+    $('#auth-setup-confpassword').removeClass('form-control-wrong-input')
+
     sender.sendSetConfigMessage password, {}, (err) ->
       if err?
         logger('Received error on sendSetConfigMessage', err)
@@ -31,6 +36,10 @@ getSetupSubmitHandler = (sender, authFinishedCb) ->
 
 getAuthSubmitHandler = (sender, authFinishedCb) ->
   return (event) ->
+    # remove the wrong-input class if present
+    # to avoid confusing the user
+    $('#auth-password').removeClass('form-control-wrong-input')
+
     # we never want to leave the page,
     # or the extension popup will close
     event.preventDefault()
@@ -39,7 +48,8 @@ getAuthSubmitHandler = (sender, authFinishedCb) ->
       if err?
         logger("Received error on sendGetConfigMessage, " + \
                "likely wrong password", err)
-        # TODO(predrag): add visual indication of incorrect password
+
+        $('#auth-password').addClass('form-control-wrong-input')
         return false
       else
         authCleanup()
