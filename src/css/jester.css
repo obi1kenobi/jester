@@ -7,15 +7,14 @@ html {
 }
 
 body {
-  width: 50rem;
-  height: 60rem;
+  min-width: 50rem;
 }
 
 #jester-auth {
   padding: 2rem;
   width: 50rem;
-  height: 60rem;
-  margin: 0px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 #jester-auth > div > form {
@@ -25,8 +24,8 @@ body {
 
 #jester-authed {
   width: 50rem;
-  height: 60rem;
-  margin: 0px;
+  margin-left: auto;
+  margin-right: auto;
   padding: 0px;
 }
 

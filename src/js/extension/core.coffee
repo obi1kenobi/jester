@@ -6,6 +6,14 @@ profiles    = require('./profiles')
 
 init = () ->
   setupHandlers()
+  setupBrowserAction()
+
+setupBrowserAction = () ->
+  chrome.browserAction.onClicked.addListener () ->
+    options =
+      url: chrome.extension.getURL('html/main.html')
+      selected: true
+    chrome.tabs.create(options)
 
 setupHandlers = () ->
   addNewHandler = ({profile, storePassword, service, username, password}, \
