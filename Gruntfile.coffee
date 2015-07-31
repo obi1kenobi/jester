@@ -98,6 +98,13 @@ module.exports = (grunt) ->
         src: sourceResources
         dest: unpackedDevPath
       } ]
+    deps:
+      files: [
+        expand: true
+        cwd: sourcePath
+        src: ['deps/**']
+        dest: tempPath
+      ]
     prod:
       files: [ {
         # the manifest is generated directly into the output directory
@@ -185,7 +192,7 @@ module.exports = (grunt) ->
     grunt.log.ok('manifest.json generated')
 
   grunt.registerTask('build',
-    ['clean:all', 'coffeelint', 'coffee', 'copy:main', 'manifest', 'mkdir:js', 'browserify'])
+    ['clean:all', 'copy:deps', 'coffeelint', 'coffee', 'copy:main', 'manifest', 'mkdir:js', 'browserify'])
 
   grunt.registerTask('test', ['build', 'run:tests'])
 

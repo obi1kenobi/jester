@@ -33,12 +33,12 @@ Shim =
       chrome.tabs.create tabOptions, (tabObj) ->
         return cb(null, tabObj.id)
 
-  submitForm: (tabid, elementValues, submitElementId, cb) ->
+  submitForm: (tabid, elementValues, submitElement, cb) ->
     executeOptions =
       file: 'js/extension/content/universal.js'
 
     chrome.tabs.executeScript tabid, executeOptions, () ->
-      submitOptions = {elementValues, submitElementId}
+      submitOptions = {elementValues, submitElement}
 
       chrome.tabs.sendMessage tabid, submitOptions, () ->
         # TODO(predrag): Figure out a better way to detect end of auth

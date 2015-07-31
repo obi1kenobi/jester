@@ -6,6 +6,8 @@ setupAddNewSelectors = (resetUnauthTimer) ->
     $(this).siblings().removeClass('active')
     $(this).addClass('active')
     $('#addnew-creds').removeClass('hidden')
+    $('#addnew-username').val('')
+    $('#addnew-password').val('')
 
   $('#addnew-yahoo').click handler
   $('#addnew-stackexchange').click handler

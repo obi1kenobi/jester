@@ -5,32 +5,39 @@ shim        = require('./shim')
 
 login = (service, username, currentPassword, cb) ->
   logger("Logging in with service #{service}")
+
+  # TODO(predrag): Remove this call before publishing; only for testing purposes
+  # console.error "ext:svc: Logging into #{service} with password: #{currentPassword}"
+
   data = serviceData[service].login
-  submitElementId = data.args.submitId
+  submitElement = data.args.submit
   elementValues = {}
-  elementValues[data.args.usernameId] = username
-  elementValues[data.args.passwordId] = currentPassword
+  elementValues[data.args.username] = username
+  elementValues[data.args.password] = currentPassword
 
   async.waterfall [
     (done) ->
       shim.getTab(data.url, done)
     (tabid, done) ->
-      shim.submitForm(tabid, elementValues, submitElementId, done)
+      shim.submitForm(tabid, elementValues, submitElement, done)
   ], cb
 
 # assumes the user is already logged in
 changePassword = (service, newPassword, cb) ->
+  # TODO(predrag): Remove this call before publishing; only for testing purposes
+  # console.error "ext:svc: Changing #{service} password to: #{newPassword}"
+
   data = serviceData[service].changePwd
-  submitElementId = data.args.submitId
+  submitElement = data.args.submit
   elementValues = {}
-  elementValues[data.args.passwordId] = newPassword
-  elementValues[data.args.confirmPasswordId] = newPassword
+  elementValues[data.args.password] = newPassword
+  elementValues[data.args.confirmPassword] = newPassword
 
   async.waterfall [
     (done) ->
       shim.getTab(data.url, done)
     (tabid, done) ->
-      shim.submitForm(tabid, elementValues, submitElementId, done)
+      shim.submitForm(tabid, elementValues, submitElement, done)
   ], cb
 
 loginAndChangePassword = (service, username, currentPassword, newPassword, cb) ->
@@ -45,9 +52,6 @@ loginAndChangePassword = (service, username, currentPassword, newPassword, cb) -
       cb(err)
 
 ServiceManager =
-  # TODO(predrag): temporary visibility for testing purposes
-  login: login
-
   setup: (service, username, userPassword, randomPassword, cb) ->
     loginAndChangePassword(service, username, userPassword, randomPassword, cb)
 

@@ -2,17 +2,18 @@
 Content script that can fill out and submit forms.
 ###
 
+$ = require('../../../deps/jquery.min.js')
 logging = require('../../lib/util/logging')
 logger = logging.logger(['ext', 'cont', 'universal'])
 
 logger("Universal content script executing!")
 
 
-submit = (elementValues, submitElementId, cb) ->
-  for id, val of elementValues
-    document.getElementById(id).value = val
+submit = (elementValues, submitElement, cb) ->
+  for id, value of elementValues
+    $(id).val(value)
 
-  document.getElementById(submitElementId).click()
+  $(submitElement).click()
 
   logger("Submitted form!")
 
@@ -25,9 +26,9 @@ submit = (elementValues, submitElementId, cb) ->
 
 chrome.runtime.onMessage.addListener (message, sender, response) ->
   logger("Processing new message!")
-  {elementValues, submitElementId} = message
+  {elementValues, submitElement} = message
 
-  submit(elementValues, submitElementId, response)
+  submit(elementValues, submitElement, response)
 
   # indicate async response by returning true
   return true
