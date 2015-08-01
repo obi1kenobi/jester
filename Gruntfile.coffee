@@ -26,7 +26,7 @@ coffeelintPath     = 'coffeelint.json'
 gruntfilePath      = 'Gruntfile.coffee'
 signingKeyPath     = 'signingKey.pem'
 
-sourceResources = ['html/**', 'css/**', 'resources/**', 'deps/**']
+sourceResources = ['html/**', 'css/**', 'resources/**', 'deps/**', 'fonts/**']
 
 module.exports = (grunt) ->
   packageFile = grunt.file.readJSON(packagePath)
