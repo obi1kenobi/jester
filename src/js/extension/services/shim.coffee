@@ -33,17 +33,32 @@ Shim =
       chrome.tabs.create tabOptions, (tabObj) ->
         return cb(null, tabObj.id)
 
-  submitForm: (tabid, elementValues, submitElement, cb) ->
+  submitForm: (tabid, elementValues, submitElement, successUrlRegex, cb) ->
     executeOptions =
-      file: 'js/extension/content/universal.js'
+      file: 'js/extension/content/form_redirect.js'
 
     chrome.tabs.executeScript tabid, executeOptions, () ->
       submitOptions = {elementValues, submitElement}
 
       chrome.tabs.sendMessage tabid, submitOptions, () ->
-        # TODO(predrag): Figure out a better way to detect end of auth
-        #                processing, and remove this timeout
-        setTimeout cb, 1500
+        # TODO(predrag): Figure out if the timeout for server
+        #                processing / redirect can be avoided
+        setTimeout () ->
+          chrome.tabs.get tabid, (tab) ->
+            if !tab.url?
+              logger("Unexpected tab object with no URL")
+              cb("Unexpected tab object with no URL")
+              return
+
+            if successUrlRegex.test(tab.url)
+              cb(null)
+              return
+            else
+              error = {expected: successUrlRegex, received: tab.url}
+              logger("Error submitting form: expected #{successUrlRegex}, got #{tab.url}")
+              cb(error)
+              return
+        , 1500
 
   releaseAllTabs: (cb) ->
     if windowIds.length == 0

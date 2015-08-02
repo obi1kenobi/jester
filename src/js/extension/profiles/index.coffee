@@ -101,6 +101,9 @@ ProfileManager =
         return cb(err)
       else
         for i in [0...profiles.length]
+          # TODO(predrag): Remove this call before publishing; only for testing purposes
+          # console.error "ext:profiles: Profile #{i}: #{JSON.stringify(result[i])}"
+
           {service, username} = result[i]
           response[profiles[i]] = {service, username}
 

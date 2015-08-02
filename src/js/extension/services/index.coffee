@@ -11,6 +11,7 @@ login = (service, username, currentPassword, cb) ->
 
   data = serviceData[service].login
   submitElement = data.args.submit
+  successUrlRegex = data.args.onSuccessURL
   elementValues = {}
   elementValues[data.args.username] = username
   elementValues[data.args.password] = currentPassword
@@ -19,7 +20,7 @@ login = (service, username, currentPassword, cb) ->
     (done) ->
       shim.getTab(data.url, done)
     (tabid, done) ->
-      shim.submitForm(tabid, elementValues, submitElement, done)
+      shim.submitForm(tabid, elementValues, submitElement, successUrlRegex, done)
   ], cb
 
 # assumes the user is already logged in
@@ -29,6 +30,7 @@ changePassword = (service, currentPassword, newPassword, cb) ->
 
   data = serviceData[service].changePwd
   submitElement = data.args.submit
+  successUrlRegex = data.args.onSuccessURL
   elementValues = {}
 
   {oldPassword, password, confirmPassword} = data.args
@@ -43,7 +45,7 @@ changePassword = (service, currentPassword, newPassword, cb) ->
     (done) ->
       shim.getTab(data.url, done)
     (tabid, done) ->
-      shim.submitForm(tabid, elementValues, submitElement, done)
+      shim.submitForm(tabid, elementValues, submitElement, successUrlRegex, done)
   ], cb
 
 loginAndChangePassword = (service, username, currentPassword, newPassword, cb) ->

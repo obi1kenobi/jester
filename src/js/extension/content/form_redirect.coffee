@@ -4,9 +4,9 @@ Content script that can fill out and submit forms.
 
 $ = require('../../../deps/jquery.min.js')
 logging = require('../../lib/util/logging')
-logger = logging.logger(['ext', 'cont', 'universal'])
+logger = logging.logger(['ext', 'cont', 'form-redir'])
 
-logger("Universal content script executing!")
+logger("Form-redirect content script executing!")
 
 
 submit = (elementValues, submitElement, cb) ->
