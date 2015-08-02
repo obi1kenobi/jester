@@ -5,7 +5,7 @@
 #     and the operation cannot be performed in a frame (must be in the main window).
 #   If type == 'hit', it is sufficient to just visit the URL (e.g. as an Image src).
 ServiceData =
-  yahoo:
+  Yahoo:
     login:
       url: 'https://login.yahoo.com/'
       type: 'form-noframe'
@@ -20,29 +20,22 @@ ServiceData =
         password: '#password'
         confirmPassword: '#password-confirm'
         submit: '#primary-cta'
-    logout:
-      url: 'https://login.yahoo.com/config/login?logout=1'
-      type: 'hit'
-  stackExchange:
+  DockerHub:
     login:
-      url: 'https://openid.stackexchange.com/account/login'
+      url: 'https://hub.docker.com/account/login/'
       type: 'form-noframe'
       args:
-        username: '#email'
-        password: '#password'
-        submit: '.orange'
+        username: '#id_username'
+        password: '#id_password'
+        submit: '.btn-primary'
     changePwd:
-      url: 'https://openid.stackexchange.com/account/password-reset'
+      url: 'https://hub.docker.com/account/change-password/'
       type: 'form-noframe'
       args:
-        password: '#password'
-        confirmPassword: '#password2'
-        submit: '.orange'
-    logout:
-      url: 'https://openid.stackexchange.com/account/logout'
-      type: 'form-noframe'
-      args:
-        submit: '.orange'
+        oldPassword: '#id_old_password'
+        password: '#id_new_password1'
+        confirmPassword: '#id_new_password2'
+        submit: '.btn-primary'
 
 
 module.exports = ServiceData

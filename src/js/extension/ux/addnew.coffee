@@ -10,7 +10,7 @@ setupAddNewSelectors = (resetUnauthTimer) ->
     $('#addnew-password').val('')
 
   $('#addnew-yahoo').click handler
-  $('#addnew-stackexchange').click handler
+  $('#addnew-dockerhub').click handler
 
 setupAddNewButton = (sender, storePassword, resetUnauthTimer) ->
   handler = createAddNewClickedHandler(sender, storePassword, resetUnauthTimer)
@@ -18,9 +18,9 @@ setupAddNewButton = (sender, storePassword, resetUnauthTimer) ->
 
 getSelectedServiceName = () ->
   if $('#addnew-yahoo').hasClass('active')
-    return 'yahoo'
-  else if $('#addnew-stackexchange').hasClass('active')
-    return 'stackExchange'
+    return 'Yahoo'
+  else if $('#addnew-dockerhub').hasClass('active')
+    return 'DockerHub'
   else
     throw new Error('No service requested!')
 

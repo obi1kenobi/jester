@@ -23,15 +23,21 @@ login = (service, username, currentPassword, cb) ->
   ], cb
 
 # assumes the user is already logged in
-changePassword = (service, newPassword, cb) ->
+changePassword = (service, currentPassword, newPassword, cb) ->
   # TODO(predrag): Remove this call before publishing; only for testing purposes
   # console.error "ext:svc: Changing #{service} password to: #{newPassword}"
 
   data = serviceData[service].changePwd
   submitElement = data.args.submit
   elementValues = {}
-  elementValues[data.args.password] = newPassword
-  elementValues[data.args.confirmPassword] = newPassword
+
+  {oldPassword, password, confirmPassword} = data.args
+  if oldPassword?
+    elementValues[oldPassword] = currentPassword
+  if password?
+    elementValues[password] = newPassword
+  if confirmPassword?
+    elementValues[confirmPassword] = newPassword
 
   async.waterfall [
     (done) ->
@@ -45,7 +51,7 @@ loginAndChangePassword = (service, username, currentPassword, newPassword, cb) -
     (done) ->
       login(service, username, currentPassword, done)
     (done) ->
-      changePassword(service, newPassword, done)
+      changePassword(service, currentPassword, newPassword, done)
   ], (err) ->
     # all tabs should be released, regardless of success or error
     shim.releaseAllTabs () ->

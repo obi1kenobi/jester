@@ -11,7 +11,7 @@
   },
   "permissions": [
     "tabs",
-    "http://*.yahoo.com/",
-    "https://*.yahoo.com/"
+    "http://*/",
+    "https://*/"
   ]
 }
