@@ -39,6 +39,12 @@ states =
   # changing to:      random password
   REVOKING_TOKEN: 'revoking-token'
 
+  # none of the possible passwords are accepted as valid
+  # could only occur as a result of user action
+  # (e.g. the user manually changing their password on a service
+  #  without updating the account info in Jester)
+  INVALID: 'invalid'
+
 
 updateProfile = (profile, storePassword, updateSecretData, cb) ->
   async.waterfall [
@@ -89,6 +95,26 @@ isRevokingToken = (profile, storePassword, newRandomPassword, cb) ->
     return secretData
   updateProfile(profile, storePassword, update, cb)
 
+stateNeedsRepair = (state) ->
+  return state != states.STEADY_STATE
+
+repairGetPasswordAlternatives = (passwordData) ->
+  {userPassword, randomPassword, token, state} = passwordData
+
+  switch state
+    when states.INITIALIZING
+      return [userPassword]
+    when states.CREATING_TOKEN
+      return [randomPassword, userPassword + token]
+    when states.USING_TOKEN
+      return [userPassword + token]
+    when states.REVOKING_TOKEN
+      return [userPassword + token, randomPassword]
+    else
+      logger("Unexpected state in recovery: #{state}")
+      return []
+
+
 ProfileManager =
   getAll: (storePassword, cb) ->
     response = {}
@@ -105,7 +131,8 @@ ProfileManager =
           # console.error "ext:profiles: Profile #{i}: #{JSON.stringify(result[i])}"
 
           {service, username} = result[i]
-          response[profiles[i]] = {service, username}
+          needsRepair = stateNeedsRepair(result[i].passwordData.state)
+          response[profiles[i]] = {service, username, needsRepair}
 
         cb(null, response)
 
