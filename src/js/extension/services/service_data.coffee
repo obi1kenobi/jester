@@ -13,16 +13,18 @@ ServiceData =
       url: 'https://login.yahoo.com/'
       type: 'form_redirect'
       args:
-        username: '#login-username'
-        password: '#login-passwd'
+        input:
+          username: '#login-username'
+          password: '#login-passwd'
         submit: '#login-signin'
         onSuccessURL: new RegExp('^' + quote('https://www.yahoo.com/') + '$')
     changePwd:
       url: 'https://edit.yahoo.com/config/change_pw'
       type: 'form_redirect'
       args:
-        password: '#password'
-        confirmPassword: '#password-confirm'
+        input:
+          newPassword: '#password'
+          confirmPassword: '#password-confirm'
         submit: '#primary-cta'
         onSuccessURL:
           new RegExp('^' + \
@@ -33,17 +35,19 @@ ServiceData =
       url: 'https://hub.docker.com/account/login/'
       type: 'form_redirect'
       args:
-        username: '#id_username'
-        password: '#id_password'
+        input:
+          username: '#id_username'
+          password: '#id_password'
         submit: '.btn-primary'
         onSuccessURL: new RegExp('^' + quote('https://hub.docker.com/') + '$')
     changePwd:
       url: 'https://hub.docker.com/account/change-password/'
       type: 'form_redirect'
       args:
-        oldPassword: '#id_old_password'
-        password: '#id_new_password1'
-        confirmPassword: '#id_new_password2'
+        input:
+          oldPassword: '#id_old_password'
+          newPassword: '#id_new_password1'
+          confirmPassword: '#id_new_password2'
         submit: '.btn-primary'
         onSuccessURL: \
           new RegExp('^' + \

@@ -9,11 +9,11 @@ logger = logging.logger(['ext', 'cont', 'form-redir'])
 logger("Form-redirect content script executing!")
 
 
-submit = (elementValues, submitElement, cb) ->
-  for id, value of elementValues
+executeFormSubmit = (input, submit, cb) ->
+  for own id, value of input
     $(id).val(value)
 
-  $(submitElement).click()
+  $(submit).click()
 
   logger("Submitted form!")
 
@@ -26,9 +26,9 @@ submit = (elementValues, submitElement, cb) ->
 
 chrome.runtime.onMessage.addListener (message, sender, response) ->
   logger("Processing new message!")
-  {elementValues, submitElement} = message
+  {input, submit} = message
 
-  submit(elementValues, submitElement, response)
+  executeFormSubmit(input, submit, response)
 
   # indicate async response by returning true
   return true

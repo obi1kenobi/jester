@@ -1,62 +1,40 @@
-logger      = require('../../lib/util/logging').logger(['ext', 'svc'])
-constants   = require('../../lib/config/constants')
-serviceData = require('./service_data')
-shim        = require('./shim')
+logger          = require('../../lib/util/logging').logger(['ext', 'svc'])
+constants       = require('../../lib/config/constants')
+serviceData     = require('./service_data')
+shim            = require('./shim')
+windowManager   = require('./window_manager')
 
-login = (service, username, currentPassword, cb) ->
-  logger("Logging in with service #{service}")
-
+login = (wnd, service, username, password, cb) ->
   # TODO(predrag): Remove this call before publishing; only for testing purposes
-  # console.error "ext:svc: Logging into #{service} with password: #{currentPassword}"
+  # console.error "ext:svc: Logging into #{service} with password: #{password}"
 
-  data = serviceData[service].login
-  submitElement = data.args.submit
-  successUrlRegex = data.args.onSuccessURL
-  elementValues = {}
-  elementValues[data.args.username] = username
-  elementValues[data.args.password] = currentPassword
-
-  async.waterfall [
-    (done) ->
-      shim.getTab(data.url, done)
-    (tabid, done) ->
-      shim.submitForm(tabid, elementValues, submitElement, successUrlRegex, done)
-  ], cb
+  action = 'login'
+  userInfo = {username, password}
+  shim.submit(wnd, service, action, userInfo, cb)
 
 # assumes the user is already logged in
-changePassword = (service, currentPassword, newPassword, cb) ->
+changePassword = (wnd, service, currentPassword, newPassword, cb) ->
   # TODO(predrag): Remove this call before publishing; only for testing purposes
   # console.error "ext:svc: Changing #{service} password to: #{newPassword}"
 
-  data = serviceData[service].changePwd
-  submitElement = data.args.submit
-  successUrlRegex = data.args.onSuccessURL
-  elementValues = {}
-
-  {oldPassword, password, confirmPassword} = data.args
-  if oldPassword?
-    elementValues[oldPassword] = currentPassword
-  if password?
-    elementValues[password] = newPassword
-  if confirmPassword?
-    elementValues[confirmPassword] = newPassword
-
-  async.waterfall [
-    (done) ->
-      shim.getTab(data.url, done)
-    (tabid, done) ->
-      shim.submitForm(tabid, elementValues, submitElement, successUrlRegex, done)
-  ], cb
+  action = 'changePwd'
+  userInfo =
+    oldPassword: currentPassword
+    newPassword: newPassword
+    confirmPassword: newPassword
+  shim.submit(wnd, service, action, userInfo, cb)
 
 loginAndChangePassword = (service, username, currentPassword, newPassword, cb) ->
+  wnd = windowManager.getWindow()
+
   async.series [
     (done) ->
-      login(service, username, currentPassword, done)
+      login(wnd, service, username, currentPassword, done)
     (done) ->
-      changePassword(service, currentPassword, newPassword, done)
+      changePassword(wnd, service, currentPassword, newPassword, done)
   ], (err) ->
     # all tabs should be released, regardless of success or error
-    shim.releaseAllTabs () ->
+    windowManager.releaseWindow wnd, () ->
       cb(err)
 
 ServiceManager =
