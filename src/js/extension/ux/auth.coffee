@@ -1,11 +1,12 @@
-logger = require('../../lib/util/logging').logger(['ext', 'ux', 'auth'])
+logger           = require('../../lib/util/logging').logger(['ext', 'ux', 'auth'])
+sender           = require('../messaging/ui/sender')
 
 authCleanup = () ->
   logger("Cleaning up auth...")
   $('#jester-auth').addClass('hidden')
   $('#jester-authed').removeClass('hidden')
 
-getSetupSubmitHandler = (sender, authFinishedCb) ->
+getSetupSubmitHandler = (authFinishedCb) ->
   return (event) ->
     # we never want to leave the page,
     # or the extension popup will close
@@ -34,7 +35,7 @@ getSetupSubmitHandler = (sender, authFinishedCb) ->
         authFinishedCb(null, password)
         return
 
-getAuthSubmitHandler = (sender, authFinishedCb) ->
+getAuthSubmitHandler = (authFinishedCb) ->
   return (event) ->
     # remove the wrong-input class if present
     # to avoid confusing the user
@@ -58,7 +59,7 @@ getAuthSubmitHandler = (sender, authFinishedCb) ->
 
 
 Auth =
-  setup: (sender, authFinishedCb) ->
+  setup: (authFinishedCb) ->
     sender.sendConfigExistsMessage (err, exists) ->
       if err?
         logger('Received error on sendConfigExistsMessage', err)
@@ -66,10 +67,10 @@ Auth =
 
       if exists
         $('#jester-enter').removeClass('hidden')
-        $('#auth-creds').submit(getAuthSubmitHandler(sender, authFinishedCb))
+        $('#auth-creds').submit(getAuthSubmitHandler(authFinishedCb))
       else
         $('#jester-setup').removeClass('hidden')
-        $('#auth-setup-creds').submit(getSetupSubmitHandler(sender, authFinishedCb))
+        $('#auth-setup-creds').submit(getSetupSubmitHandler(authFinishedCb))
 
 
 module.exports = Auth

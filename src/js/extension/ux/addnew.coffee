@@ -1,8 +1,10 @@
-logger = require('../../lib/util/logging').logger(['ext', 'ux', 'addnew'])
+logger           = require('../../lib/util/logging').logger(['ext', 'ux', 'addnew'])
+sender           = require('../messaging/ui/sender')
+unauthTimer      = require('./unauth_timer')
 
-setupAddNewSelectors = (resetUnauthTimer) ->
+setupAddNewSelectors = () ->
   handler = () ->
-    resetUnauthTimer()
+    unauthTimer.reset()
     $(this).siblings().removeClass('active')
     $(this).addClass('active')
     $('#addnew-creds').removeClass('hidden')
@@ -12,8 +14,8 @@ setupAddNewSelectors = (resetUnauthTimer) ->
   $('#addnew-yahoo').click handler
   $('#addnew-dockerhub').click handler
 
-setupAddNewButton = (sender, storePassword, resetUnauthTimer) ->
-  handler = createAddNewClickedHandler(sender, storePassword, resetUnauthTimer)
+setupAddNewButton = (storePassword) ->
+  handler = createAddNewClickedHandler(storePassword)
   $('#addnew-setup').click(handler)
 
 getSelectedServiceName = () ->
@@ -24,9 +26,9 @@ getSelectedServiceName = () ->
   else
     throw new Error('No service requested!')
 
-createAddNewClickedHandler = (sender, storePassword, resetUnauthTimer) ->
+createAddNewClickedHandler = (storePassword) ->
   return () ->
-    resetUnauthTimer()
+    unauthTimer.reset()
     username = $('#addnew-username').val()
     password = $('#addnew-password').val()
 
@@ -38,9 +40,9 @@ createAddNewClickedHandler = (sender, storePassword, resetUnauthTimer) ->
 
 
 AddNew =
-  setup: (sender, storePassword, resetUnauthTimer) ->
-    setupAddNewSelectors(resetUnauthTimer)
-    setupAddNewButton(sender, storePassword, resetUnauthTimer)
+  setup: (storePassword) ->
+    setupAddNewSelectors()
+    setupAddNewButton(storePassword)
 
 
 module.exports = AddNew

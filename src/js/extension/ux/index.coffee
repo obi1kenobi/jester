@@ -4,20 +4,18 @@ sender          = require('../messaging/ui/sender')
 popupAuth       = require('./auth')
 popupProfiles   = require('./profiles')
 popupAddNew     = require('./addnew')
-
-currentTabId = null
-unauthTimer = null
+unauthTimer     = require('./unauth_timer')
 
 main = () ->
   setupAutoUnauth()
-  popupAuth.setup sender, (err, password) ->
+  popupAuth.setup (err, password) ->
     if err?
       logger("Unexpected error returned from auth setup", err)
       return
     else
       setupTabs()
-      popupProfiles.populate(sender, password, resetUnauthTimer)
-      popupAddNew.setup(sender, password, resetUnauthTimer)
+      popupProfiles.populate(password)
+      popupAddNew.setup(password)
 
 setupTabs = () ->
   deselectAddNewSelectors = () ->
@@ -25,7 +23,7 @@ setupTabs = () ->
     $('#addnew-creds').addClass('hidden')
 
   $('#tabhead-home').click () ->
-    resetUnauthTimer()
+    unauthTimer.reset()
     $(this).siblings().removeClass('active')
     $(this).addClass('active')
     $(this).parent().siblings('.tab').addClass('hidden')
@@ -34,7 +32,7 @@ setupTabs = () ->
     deselectAddNewSelectors()
 
   $('#tabhead-addnew').click () ->
-    resetUnauthTimer()
+    unauthTimer.reset()
     $(this).siblings().removeClass('active')
     $(this).addClass('active')
     $(this).parent().siblings('.tab').addClass('hidden')
@@ -42,7 +40,7 @@ setupTabs = () ->
     $('#tab-addnew').removeClass('hidden')
 
   $('#tabhead-about').click () ->
-    resetUnauthTimer()
+    unauthTimer.reset()
     $(this).siblings().removeClass('active')
     $(this).addClass('active')
     $(this).parent().siblings('.tab').addClass('hidden')
@@ -50,26 +48,11 @@ setupTabs = () ->
     $('#tab-about').removeClass('hidden')
     deselectAddNewSelectors()
 
-closeTab = () ->
-  if !currentTabId?
-    logger("Unexpectedly did not have a current tab id to close.")
-    return
-
-  chrome.tabs.remove(currentTabId)
-
 setupAutoUnauth = () ->
   chrome.tabs.getCurrent (tab) ->
-    currentTabId = tab.id
-
-    if !currentTabId?
-      logger("Unexpectedly couldn't get ID of the current tab.")
+    if !tab.id?
+      logger("Unexpectedly got tab with no id")
       return
-
-    unauthTimer = setTimeout(closeTab, (constants.AUTO_UNAUTH_SECONDS * 1000))
-
-resetUnauthTimer = () ->
-  logger("Resetting unauth timer...")
-  clearTimeout(unauthTimer)
-  unauthTimer = setTimeout(closeTab, (constants.AUTO_UNAUTH_SECONDS * 1000))
+    unauthTimer.setup(tab.id)
 
 $(document).ready(main)

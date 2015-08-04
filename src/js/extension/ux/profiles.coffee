@@ -1,5 +1,7 @@
-logger    = require('../../lib/util/logging').logger(['ext', 'ux', 'profiles'])
-constants = require('../../lib/config/constants')
+logger         = require('../../lib/util/logging').logger(['ext', 'ux', 'profiles'])
+constants      = require('../../lib/config/constants')
+sender         = require('../messaging/ui/sender')
+unauthTimer    = require('./unauth_timer')
 
 NO_TOKEN_TEXT = '<none>'
 
@@ -8,7 +10,7 @@ makeHeadingPanel = (service) ->
   header = $('<h3 class="panel-title">').text(service)
   return headingPanel.append(header)
 
-makeBodyPanel = (profile, sender, storePassword, username, resetUnauthTimer) ->
+makeBodyPanel = (profile, storePassword, username) ->
   bodyPanel = $('<div class="panel-body">')
 
   accountDiv = $('<div class="col-xs-8 account-name">')
@@ -23,16 +25,16 @@ makeBodyPanel = (profile, sender, storePassword, username, resetUnauthTimer) ->
     .text("Get token")
     .append $('<i class="fa fa-spinner fa-spin">')
   tokenField = $('<div class="list-group-item">').text(NO_TOKEN_TEXT)
-  getTokenButton.click(getTokenClickHandler(sender, storePassword, resetUnauthTimer))
+  getTokenButton.click(getTokenClickHandler(storePassword))
 
   tokenListGroup.append(getTokenButton).append(tokenField)
   tokenDiv = tokenDiv.append tokenListGroup
 
   return bodyPanel.append(accountDiv).append(tokenDiv)
 
-getTokenClickHandler = (sender, storePassword, resetUnauthTimer) ->
+getTokenClickHandler = (storePassword) ->
   return () ->
-    resetUnauthTimer()
+    unauthTimer.reset()
     buttonElement = $(this)
     profile = buttonElement.data('profile')
     buttonElement.addClass('spinner-active')
@@ -47,30 +49,29 @@ getTokenClickHandler = (sender, storePassword, resetUnauthTimer) ->
         tokenTextElement.text(NO_TOKEN_TEXT)
       , constants.TEMPORARY_PASSWORD_VALIDITY_MS
 
-addProfile = (profile, sender, storePassword, {service, username}, resetUnauthTimer) ->
+addProfile = (profile, storePassword, {service, username}) ->
   mainProfileDiv = $('<div class="panel panel-default">')
   mainProfileDiv.append makeHeadingPanel(service)
-  mainProfileDiv.append makeBodyPanel(profile, sender, storePassword, \
-                                      username, resetUnauthTimer)
+  mainProfileDiv.append makeBodyPanel(profile, storePassword, username)
 
   $('#tab-profiles').append(mainProfileDiv)
 
-handleProfiles = (sender, storePassword, profiles, resetUnauthTimer) ->
+handleProfiles = (storePassword, profiles) ->
   if Object.keys(profiles).length == 0
     $('#profiles-empty').removeClass('hidden')
   else
     for own profile, data of profiles
-      addProfile(profile, sender, storePassword, data, resetUnauthTimer)
+      addProfile(profile, storePassword, data)
 
 
 Profiles =
-  populate: (sender, storePassword, resetUnauthTimer) ->
+  populate: (storePassword) ->
     sender.sendGetProfilesMessage storePassword, (err, profiles) ->
       if err?
         logger("Unexpected error on sendGetProfiles", err)
         return
       else
-        handleProfiles(sender, storePassword, profiles, resetUnauthTimer)
+        handleProfiles(storePassword, profiles)
 
 
 module.exports = Profiles
