@@ -1,7 +1,9 @@
 logger = require('../util/logging').logger(['lib', 'sstore', 'storage'])
+random = require('../crypto/secure_random')
 
 PROFILES_KEY = "profiles"
 CONFIG_KEY = "config"
+SALT_KEY = "salt"
 
 get = (key) ->
   keyString = JSON.stringify({key})
@@ -18,6 +20,13 @@ set = (key, val) ->
 
 
 Storage =
+  getSalt: () ->
+    salt = get(SALT_KEY)
+    if !salt?
+      salt = random.getRandomSalt()
+      set(SALT_KEY, salt)
+    return salt
+
   getProfileNames: () ->
     profiles = get(PROFILES_KEY)
     if profiles?
@@ -28,11 +37,11 @@ Storage =
   getProfile: (profile) ->
     return get(PROFILES_KEY)?[profile]
 
-  setProfile: (profile, salt, iv, authTag, publicData, ciphertext) ->
+  setProfile: (profile, iv, authTag, publicData, ciphertext) ->
     profiles = get(PROFILES_KEY)
     if !profiles?
       profiles = {}
-    profiles[profile] = {salt, iv, authTag, publicData, ciphertext}
+    profiles[profile] = {iv, authTag, publicData, ciphertext}
     set(PROFILES_KEY, profiles)
 
   removeProfile: (profile) ->
@@ -46,8 +55,8 @@ Storage =
   getConfig: () ->
     return get(CONFIG_KEY)
 
-  setConfig: (salt, iv, authTag, ciphertext) ->
-    return set(CONFIG_KEY, {salt, iv, authTag, ciphertext})
+  setConfig: (iv, authTag, ciphertext) ->
+    return set(CONFIG_KEY, {iv, authTag, ciphertext})
 
 
 module.exports = Storage

@@ -9,12 +9,14 @@ stringToData = (text) ->
 dataToString = (val) ->
   return JSON.stringify({val})
 
-encrypt = (storePassword, salt, data, cb) ->
+encrypt = (storePassword, data, cb) ->
+  salt = storage.getSalt()
   dataString = dataToString(data)
   crypto.encryptString dataString, storePassword, salt, cb
 
 decrypt = (storePassword, data, cb) ->
-  {salt, iv, authTag, ciphertext} = data
+  salt = storage.getSalt()
+  {iv, authTag, ciphertext} = data
   crypto.decryptString ciphertext, storePassword, \
                        salt, iv, authTag, (err, decryptedString) ->
     if err?
@@ -42,19 +44,14 @@ SecureStore =
     decrypt storePassword, profileData, cb
 
   setProfile: (profile, storePassword, publicData, secretData, cb) ->
-    salt = storage.getProfile(profile)?.salt
-
-    if !salt?
-      salt = random.getRandomSalt()
-
-    encrypt storePassword, salt, secretData, (err, res) ->
+    encrypt storePassword, secretData, (err, res) ->
       if err?
         logger("Error encrypting data for profile #{profile}", err)
         cb?(err)
         return
       else
         {iv, authTag, ciphertext} = res
-        storage.setProfile(profile, salt, iv, authTag, publicData, ciphertext)
+        storage.setProfile(profile, iv, authTag, publicData, ciphertext)
         cb?()
 
   getConfig: (storePassword, cb) ->
@@ -66,19 +63,14 @@ SecureStore =
     decrypt storePassword, configData, cb
 
   setConfig: (storePassword, config, cb) ->
-    salt = storage.getConfig()?.salt
-
-    if !salt?
-      salt = random.getRandomSalt()
-
-    encrypt storePassword, salt, config, (err, res) ->
+    encrypt storePassword, config, (err, res) ->
       if err?
         logger("Error encrypting data for profile #{profile}", err)
         cb?(err)
         return
       else
         {iv, authTag, ciphertext} = res
-        storage.setConfig(salt, iv, authTag, ciphertext)
+        storage.setConfig(iv, authTag, ciphertext)
         cb?()
 
   configExists: () ->

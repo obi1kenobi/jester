@@ -16,7 +16,6 @@ describe 'Secure store, profile storage', () ->
 
     profileName = "test_profile"
     profileData =
-      salt: "test_salt"
       iv: getRandomBase64()
       authTag: getRandomBase64()
       publicData:
@@ -24,7 +23,7 @@ describe 'Secure store, profile storage', () ->
         de: "fgh"
       ciphertext: "test_ciphertext"
 
-    storage.setProfile(profileName, profileData.salt, profileData.iv, \
+    storage.setProfile(profileName, profileData.iv, \
                        profileData.authTag, profileData.publicData, \
                        profileData.ciphertext)
 
@@ -39,12 +38,10 @@ describe 'Secure store, profile storage', () ->
     expect(storage.getConfig()).to.not.exist
 
     config =
-      salt: "test_salt"
       iv: getRandomBase64()
       authTag: getRandomBase64()
       ciphertext: "test_ciphertext"
 
-    storage.setConfig(config.salt, config.iv, \
-                      config.authTag, config.ciphertext)
+    storage.setConfig(config.iv, config.authTag, config.ciphertext)
 
     expect(storage.getConfig()).to.eql(config)
