@@ -8,6 +8,7 @@ html {
 
 body {
   min-width: 50rem;
+  min-height: 50rem;
 }
 
 #jester-auth {
@@ -20,6 +21,15 @@ body {
 #jester-auth > div > form {
   margin: auto;
   width: 20rem;
+}
+
+#jester-loading {
+  font-size: 150%;
+  margin: auto;
+  width: 50rem;
+  height: 50rem;
+  text-align: center;
+  line-height: 20em;
 }
 
 #jester-authed {

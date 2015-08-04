@@ -12,10 +12,17 @@ main = () ->
     if err?
       logger("Unexpected error returned from auth setup", err)
       return
-    else
-      setupTabs()
-      popupProfiles.populate(password)
-      popupAddNew.setup(password)
+
+    $('#jester-loading').removeClass('hidden')
+    setupTabs()
+    popupAddNew.setup(password)
+    popupProfiles.setup password, (err, res) ->
+      if err?
+        logger("Unexpected error returned from profile setup", err)
+        return
+
+      $('#jester-loading').addClass('hidden')
+      $('#jester-authed').removeClass('hidden')
 
 setupTabs = () ->
   deselectAddNewSelectors = () ->

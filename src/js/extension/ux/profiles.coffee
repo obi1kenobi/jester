@@ -65,13 +65,16 @@ handleProfiles = (storePassword, profiles) ->
 
 
 Profiles =
-  populate: (storePassword) ->
+  setup: (storePassword, cb) ->
     sender.sendGetProfilesMessage storePassword, (err, profiles) ->
       if err?
         logger("Unexpected error on sendGetProfiles", err)
+        cb("Unexpected error on sendGetProfiles: #{err}")
         return
       else
         handleProfiles(storePassword, profiles)
+        cb()
+
 
 
 module.exports = Profiles

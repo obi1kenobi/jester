@@ -4,7 +4,6 @@ sender           = require('../messaging/ui/sender')
 authCleanup = () ->
   logger("Cleaning up auth...")
   $('#jester-auth').addClass('hidden')
-  $('#jester-authed').removeClass('hidden')
 
 getSetupSubmitHandler = (authFinishedCb) ->
   return (event) ->
