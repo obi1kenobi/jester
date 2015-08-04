@@ -8,15 +8,36 @@ states =
 
   # ### State flow: ###
   #
-  # - new user account created:     INITIALIZING
-  #                                      \/
-  # - changed password to random:   STEADY_STATE  <---+
-  #                                      \/           |
-  # - requested token:             CREATING_TOKEN     |
-  #                                      \/           | (token successfully revoked)
-  # - token created successfully:    USING_TOKEN      |
-  #                                      \/           |
-  # - token about to be revoked:   REVOKING_TOKEN ----+
+  # - new user account created:           INITIALIZING
+  #                                            \/
+  # - changed password to random:         STEADY_STATE  <---+
+  #                                            \/           |
+  # - requested token:                   CREATING_TOKEN     |
+  #                                            \/           | (token
+  # - token created successfully:          USING_TOKEN      |  successfully
+  #                                            \/           |  revoked)
+  # - token about to be revoked:         REVOKING_TOKEN ----+
+  #
+  # - when Jester couldn't find              INVALID
+  #   a valid password to repair to
+  #
+  #
+  # When profiles are loaded, all of them should be in STEADY_STATE or INVALID.
+  # Any accounts that are not in one of these states require repair. One of the ways
+  # this could happen is if the browser was closed while Jester was in the middle
+  # of a password change operation. Repair proceeds as follows:
+  # 1. Depending on the current state of the profile, possible password candidates
+  #    are identified.
+  # 2. Login is attempted with each password candidate.
+  # 3. If no working password is discovered among the candidates, the profile
+  #    is marked INVALID and the repair process is terminated.
+  #    If a working password is discovered, the profile is marked INITIALIZING
+  #    and the working password is set as the 'random password' of the profile.
+  #    This ensures that any interruption during repair will not result in the
+  #    working password being removed before being changed successfully.
+  # 4. A new random password is generated and set on the account corresponding
+  #    to the profile.
+  # 5. The profile is set to STEADY_STATE.
   #
 
   # current password: user password
@@ -95,46 +116,120 @@ isRevokingToken = (profile, storePassword, newRandomPassword, cb) ->
     return secretData
   updateProfile(profile, storePassword, update, cb)
 
+isInvalid = (profile, storePassword, cb) ->
+  update = (secretData) ->
+    {passwordData} = secretData
+    passwordData.state = states.INVALID
+
+    secretData.passwordData = passwordData
+    return secretData
+  updateProfile(profile, storePassword, update, cb)
+
 stateNeedsRepair = (state) ->
   return state != states.STEADY_STATE
 
-repairGetPasswordAlternatives = (passwordData) ->
+getPasswordOptions = (passwordData) ->
   {userPassword, randomPassword, token, state} = passwordData
 
   switch state
     when states.INITIALIZING
-      return [userPassword]
+      return [userPassword, randomPassword]
     when states.CREATING_TOKEN
       return [randomPassword, userPassword + token]
     when states.USING_TOKEN
       return [userPassword + token]
     when states.REVOKING_TOKEN
       return [userPassword + token, randomPassword]
+    when states.INVALID
+      return [userPassword, randomPassword]
     else
       logger("Unexpected state in recovery: #{state}")
       return []
 
+attemptProfileRepair = (profile, storePassword, profileData, cb) ->
+  {service, username, passwordData} = profileData
+  passwordOptions = getPasswordOptions(passwordData)
+
+  async.detectSeries passwordOptions, (password, done) ->
+    services.testPassword service, username, password, (err) ->
+      done(!err?)
+  , (correctPassword) ->
+    if !correctPassword?
+      isInvalid profile, storePassword, (err, res) ->
+        if err?
+          return cb(err)
+        logger("Repair failed for profile #{profile}")
+        return cb(null, states.INVALID)
+    else
+      logger("Found a valid password for profile #{profile}")
+      finishProfileRepair profile, storePassword, service, username, \
+                          correctPassword, passwordData.userPassword, (err, res) ->
+        if err?
+          return cb(err)
+        logger("Repair successful for profile #{profile}")
+        return cb(null, states.STEADY_STATE)
+
+finishProfileRepair = (profile, storePassword, service, \
+                       username, currentPassword, userPassword, cb) ->
+  randomPassword = secureRandom.getRandomPassword(constants.DEFAULT_PASSWORD_BYTES)
+  publicData = secureStore.getPublic(profile)
+
+  passwordData = {userPassword, randomPassword, state: states.STEADY_STATE}
+  profileData = {service, username, passwordData}
+
+  tempPasswordData =
+    userPassword: userPassword
+    randomPassword: currentPassword
+    state: states.INITIALIZING
+  tempProfileData = {service, username, passwordData: tempPasswordData}
+
+  async.series [
+    (done) ->
+      # ensure that in the event of interruption of the repair process,
+      # the current password is still stored (in this case, in the random password field)
+      secureStore.setProfile(profile, storePassword, publicData, tempProfileData, done)
+    (done) ->
+      services.setup(service, username, currentPassword, randomPassword, done)
+    (done) ->
+      secureStore.setProfile(profile, storePassword, publicData, profileData, done)
+  ], cb
+
+extractProfileData = ({profile, profileData}, storePassword, cb) ->
+  {service, username} = profileData
+  state = profileData.passwordData.state
+  if stateNeedsRepair(state)
+    logger("Attempting to repair profile #{profile}")
+    attemptProfileRepair profile, storePassword, profileData, (err, newstate) ->
+      if err?
+        logger("Unexpected error when repairing profile", err)
+        return cb("Unexpected error when repairing profile: #{err}")
+      cb(null, {service, username, valid: stateNeedsRepair(newstate)})
+  else
+    process.nextTick () ->
+      cb(null, {service, username, valid: true})
 
 ProfileManager =
   getAll: (storePassword, cb) ->
-    response = {}
     profiles = secureStore.getProfileNames()
 
-    async.map profiles, (profile, done) ->
-      secureStore.getSecret(profile, storePassword, done)
-    , (err, result) ->
-      if err?
-        return cb(err)
-      else
+    async.waterfall [
+      (done) ->
+        async.map profiles, (profile, callb) ->
+          secureStore.getSecret(profile, storePassword, callb)
+        , done
+      (result, done) ->
+        allProfileData = []
         for i in [0...profiles.length]
           # TODO(predrag): Remove this call before publishing; only for testing purposes
-          # console.error "ext:profiles: Profile #{i}: #{JSON.stringify(result[i])}"
+          # console.error "ext:profiles: Profile #{profiles[i]}: " + \
+          #               "#{JSON.stringify(result[i])}"
 
-          {service, username} = result[i]
-          needsRepair = stateNeedsRepair(result[i].passwordData.state)
-          response[profiles[i]] = {service, username, needsRepair}
+          allProfileData.push {profile: profiles[i], profileData: result[i]}
 
-        cb(null, response)
+        async.mapSeries allProfileData, (item, callb) ->
+          extractProfileData(item, storePassword, callb)
+        , done
+    ], cb
 
   createNew: (profile, storePassword, service, username, userPassword, cb) ->
     randomPassword = secureRandom.getRandomPassword(constants.DEFAULT_PASSWORD_BYTES)

@@ -1,8 +1,8 @@
 logger    = require('../../lib/util/logging').logger(['ext', 'svc', 'window'])
 
-# This object is not safe for concurrent use.
-# No method may be called before the callback of an existing method
-# call is called and completed.
+# Windows are not safe for concurrent use.
+# No method with a window parameter may be called before the callback
+#   of an existing method call with the same window is called and completed.
 WindowManager =
   getWindow: () ->
     wnd =
@@ -11,6 +11,7 @@ WindowManager =
 
   getTab: (wnd, url, cb) ->
     if wnd.id?
+      logger("Adding a tab to window id #{wnd.id}")
       tabOptions =
         windowId: wnd.id
         url: url
@@ -37,6 +38,7 @@ WindowManager =
           return cb("Unexpectedly received a window with no ID")
 
         wnd.id = windowId
+        logger("Created a new window with id #{wnd.id}")
 
         updateOptions =
           focused: false
@@ -47,6 +49,7 @@ WindowManager =
 
   releaseWindow: (wnd, cb) ->
     if wnd.id?
+      logger("Removing window with id #{wnd.id}")
       chrome.windows.remove wnd.id, cb
     else
       process.nextTick cb

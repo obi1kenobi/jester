@@ -40,7 +40,7 @@ formRedirectHandler = (tabid, args, userInfo, cb) ->
             logger("Error submitting form: expected #{onSuccessURL}, got #{tab.url}")
             cb(error)
             return
-      , 1500
+      , 3000
 
 
 handlers = {}

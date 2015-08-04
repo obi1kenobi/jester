@@ -38,8 +38,22 @@ loginAndChangePassword = (service, username, currentPassword, newPassword, cb) -
       cb(err)
 
 ServiceManager =
-  setup: (service, username, userPassword, randomPassword, cb) ->
-    loginAndChangePassword(service, username, userPassword, randomPassword, cb)
+  setup: (service, username, currentPassword, randomPassword, cb) ->
+    loginAndChangePassword(service, username, currentPassword, randomPassword, cb)
+
+  testPassword: (service, username, password, cb) ->
+    wnd = windowManager.getWindow()
+
+    # HACK(predrag): Chrome seems to asynchronously scrub incognito data
+    # so if an incognito window is closed, and then quickly opened again,
+    # some of the data may still be present.
+    # For the moment, attempt to mitigate that by delaying the login attempt
+    # by half a second.
+    setTimeout () ->
+      login wnd, service, username, password, (err, res) ->
+        windowManager.releaseWindow wnd, () ->
+          cb(err, res)
+    , 500
 
   setToken: (service, username, currentPassword, pwdAndToken, \
              nextPassword, tokenSetCb, tokenPreResetCb, tokenResetCb) ->
