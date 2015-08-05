@@ -141,7 +141,7 @@ getPasswordOptions = (passwordData) ->
     when states.REVOKING_TOKEN
       return [userPassword + token, randomPassword]
     when states.INVALID
-      return [userPassword, randomPassword]
+      return []
     else
       logger("Unexpected state in recovery: #{state}")
       return []
