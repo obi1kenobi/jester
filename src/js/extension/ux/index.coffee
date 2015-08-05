@@ -1,22 +1,24 @@
-logger          = require('../../lib/util/logging').logger(['ext', 'ux', 'index'])
-constants       = require('../../lib/config/constants')
-sender          = require('../messaging/ui/sender')
-popupAuth       = require('./auth')
-popupProfiles   = require('./profiles')
-popupAddNew     = require('./addnew')
-unauthTimer     = require('./unauth_timer')
+logger                = require('../../lib/util/logging').logger(['ext', 'ux', 'index'])
+constants             = require('../../lib/config/constants')
+sender                = require('../messaging/ui/sender')
+popupAuth             = require('./auth')
+popupProfiles         = require('./profiles')
+popupAddNew           = require('./addnew')
+unauthTimer           = require('./unauth_timer')
+ephemeralStorage      = require('./ephemeral_storage')
 
 main = () ->
   setupAutoUnauth()
   popupAuth.setup (err, password) ->
+    ephemeralStorage.storePassword = password
     if err?
       logger("Unexpected error returned from auth setup", err)
       return
 
     $('#jester-loading').removeClass('hidden')
     setupTabs()
-    popupAddNew.setup(password)
-    popupProfiles.setup password, (err, res) ->
+    popupAddNew.setup()
+    popupProfiles.setup (err, res) ->
       if err?
         logger("Unexpected error returned from profile setup", err)
         return

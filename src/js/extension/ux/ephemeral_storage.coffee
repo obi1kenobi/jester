@@ -1,0 +1,3 @@
+EphemeralStorage = {}
+
+module.exports = EphemeralStorage

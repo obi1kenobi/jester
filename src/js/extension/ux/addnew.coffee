@@ -1,6 +1,8 @@
 logger           = require('../../lib/util/logging').logger(['ext', 'ux', 'addnew'])
 sender           = require('../messaging/ui/sender')
+profiles         = require('./profiles')
 unauthTimer      = require('./unauth_timer')
+ephemeralStorage = require('./ephemeral_storage')
 
 setupAddNewSelectors = () ->
   handler = () ->
@@ -14,9 +16,8 @@ setupAddNewSelectors = () ->
   $('#addnew-yahoo').click handler
   $('#addnew-dockerhub').click handler
 
-setupAddNewButton = (storePassword) ->
-  handler = createAddNewClickedHandler(storePassword)
-  $('#addnew-setup').click(handler)
+setupAddNewButton = () ->
+  $('#addnew-setup').click(addNewClickedHandler)
 
 getSelectedServiceName = () ->
   if $('#addnew-yahoo').hasClass('active')
@@ -26,23 +27,23 @@ getSelectedServiceName = () ->
   else
     throw new Error('No service requested!')
 
-createAddNewClickedHandler = (storePassword) ->
-  return () ->
-    unauthTimer.reset()
-    username = $('#addnew-username').val()
-    password = $('#addnew-password').val()
+addNewClickedHandler = () ->
+  unauthTimer.reset()
+  username = $('#addnew-username').val()
+  password = $('#addnew-password').val()
 
-    service = getSelectedServiceName()
-    profile = uuid.v1()
+  service = getSelectedServiceName()
+  profile = uuid.v1()
+  {storePassword} = ephemeralStorage
 
-    sender.sendAddNewMessage profile, storePassword, service, username, password, () ->
-      logger('Response received')
-
+  sender.sendAddNewMessage profile, storePassword, service, username, password, () ->
+    profiles.addProfile(profile, {service, username})
+    $('#tabhead-home').click()
 
 AddNew =
-  setup: (storePassword) ->
+  setup: () ->
     setupAddNewSelectors()
-    setupAddNewButton(storePassword)
+    setupAddNewButton()
 
 
 module.exports = AddNew
