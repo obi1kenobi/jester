@@ -22,25 +22,35 @@ formRedirectHandler = (tabid, args, userInfo, cb) ->
       input: scriptArgs
       submit: submit
 
+    aborted = false
+    timeout = setTimeout () ->
+      aborted = true
+      fn = cb
+      cb = null
+      fn?("Submit aborted, no reply from injected script")
+    , 5000
+
     chrome.tabs.sendMessage tabid, submitOptions, () ->
-      # TODO(predrag): Figure out if the timeout for server
-      #                processing / redirect can be avoided
-      setTimeout () ->
+      retryOpts =
+        times: 20
+        interval: 200
+
+      async.retry retryOpts, (done) ->
         chrome.tabs.get tabid, (tab) ->
           if !tab.url?
             logger("Unexpected tab object with no URL")
-            cb("Unexpected tab object with no URL")
-            return
+            return done("Unexpected tab object with no URL")
 
           if onSuccessURL.test(tab.url)
-            cb(null)
-            return
+            return done(null)
           else
-            error = {expected: onSuccessURL, received: tab.url}
-            logger("Error submitting form: expected #{onSuccessURL}, got #{tab.url}")
-            cb(error)
-            return
-      , 3000
+            return done({expected: onSuccessURL, received: tab.url})
+      , (err, res) ->
+        clearTimeout(timeout)
+        if !aborted
+          fn = cb
+          cb = null
+          fn?(err, res)
 
 
 handlers = {}

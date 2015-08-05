@@ -229,6 +229,12 @@ ProfileManager =
         async.mapSeries allProfileData, (item, callb) ->
           extractProfileData(item, storePassword, callb)
         , done
+      (extractedData, done) ->
+        result = {}
+        for i in [0...profiles.length]
+          result[profiles[i]] = extractedData[i]
+        process.nextTick () ->
+          done(null, result)
     ], cb
 
   createNew: (profile, storePassword, service, username, userPassword, cb) ->

@@ -50,6 +50,7 @@ getTokenClickHandler = (storePassword) ->
       , constants.TEMPORARY_PASSWORD_VALIDITY_MS
 
 addProfile = (profile, storePassword, {service, username}) ->
+  logger("Adding panel for profile #{profile}")
   mainProfileDiv = $('<div class="panel panel-default">')
   mainProfileDiv.append makeHeadingPanel(service)
   mainProfileDiv.append makeBodyPanel(profile, storePassword, username)
@@ -75,6 +76,7 @@ Profiles =
         handleProfiles(storePassword, profiles)
         cb()
 
+  addProfile: addProfile
 
 
 module.exports = Profiles
