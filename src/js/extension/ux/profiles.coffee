@@ -10,7 +10,7 @@ notification = new NotificationBar($('#alert-profiles'))
 
 makeHeadingPanel = (service) ->
   headingPanel = $('<div class="panel-heading">')
-  header = $('<h3 class="panel-title">').text(service)
+  header = $('<strong class="panel-title">').text(service)
   return headingPanel.append(header)
 
 makeBodyPanel = (profile, username) ->
@@ -61,6 +61,8 @@ tokenClickHandler = () ->
     , constants.TEMPORARY_PASSWORD_VALIDITY_MS
 
 addProfile = (profile, {service, username}) ->
+  $('#profiles-empty').addClass('hidden')
+
   logger("Adding panel for profile #{profile}")
   mainProfileDiv = $('<div class="panel panel-default">')
   mainProfileDiv.append makeHeadingPanel(service)
@@ -73,7 +75,8 @@ handleProfiles = (profiles) ->
     $('#profiles-empty').removeClass('hidden')
   else
     for own profile, data of profiles
-      addProfile(profile, data)
+      if data.valid
+        addProfile(profile, data)
 
 
 Profiles =
