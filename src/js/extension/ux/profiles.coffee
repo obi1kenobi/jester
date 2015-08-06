@@ -13,7 +13,7 @@ makeHeadingPanel = (service) ->
   header = $('<strong class="panel-title">').text(service)
   return headingPanel.append(header)
 
-makeBodyPanel = (profile, username) ->
+makeBodyPanel = (profile, username, valid) ->
   bodyPanel = $('<div class="panel-body">')
 
   accountDiv = $('<div class="col-xs-8 account-name">')
@@ -23,12 +23,20 @@ makeBodyPanel = (profile, username) ->
   tokenDiv = $('<div class="col-xs-4 account-token">')
   tokenListGroup = $('<div class="list-group">')
 
-  getTokenButton = $('<a href="#" class="list-group-item has-spinner active">') \
-    .data('profile', profile) \
-    .text("Get token")
-    .append $('<i class="fa fa-spinner fa-spin">')
-  tokenField = $('<div class="list-group-item">').text(NO_TOKEN_TEXT)
-  getTokenButton.click(tokenClickHandler)
+  if valid
+    getTokenButton = $('<a href="#" class="list-group-item has-spinner active">') \
+      .data('profile', profile) \
+      .text("Get token")
+      .append $('<i class="fa fa-spinner fa-spin">')
+    tokenField = $('<div class="list-group-item">').text(NO_TOKEN_TEXT)
+    getTokenButton.click(tokenClickHandler)
+  else
+    getTokenButton = $('<a href="#" class="list-group-item has-spinner ' + \
+                       'active disabled">') \
+      .data('profile', profile) \
+      .text("Get token")
+      .append $('<i class="fa fa-spinner fa-spin">')
+    tokenField = $('<div class="list-group-item disabled">').text('Profile invalid!')
 
   tokenListGroup.append(getTokenButton).append(tokenField)
   tokenDiv = tokenDiv.append tokenListGroup
@@ -42,31 +50,38 @@ tokenClickHandler = () ->
   profile = buttonElement.data('profile')
   buttonElement.addClass('spinner-active')
   message = "Creating your token..."
-  notification.display('Please wait', message, 15000, 'info')
+  notification.display('Please wait', message, 60000, 'info')
   sender.sendGetTokenMessage profile, storePassword, (err, token) ->
     buttonElement.removeClass('spinner-active')
     if err?
       logger("Unexpected error getting token:", err)
-      message = "Couldn't get token. Please try again later."
+      message = "Unexpected error, couldn't get token. This profile is now disabled."
+      buttonElement.addClass('disabled')
+      buttonElement.siblings('div.list-group-item').addClass('disabled')
       notification.display('Error!', message, 60000, 'danger')
       return
     tokenTextElement = buttonElement.siblings('div')
     tokenTextElement.text(token)
     message = "Token created successfully."
-    notification.display('Success!', message, 15000, 'success')
+    notification.display('Success!', message, 30000, 'success')
     setTimeout () ->
       message = "Your token expired and is no longer valid."
-      notification.display('Token expired!', message, 10000, 'info')
+      notification.display('Token expired!', message, 20000, 'info')
       tokenTextElement.text(NO_TOKEN_TEXT)
     , constants.TEMPORARY_PASSWORD_VALIDITY_MS
 
-addProfile = (profile, {service, username}) ->
+addProfile = (profile, {service, username, valid}) ->
   $('#profiles-empty').addClass('hidden')
 
   logger("Adding panel for profile #{profile}")
-  mainProfileDiv = $('<div class="panel panel-default">')
+  mainProfileDiv = $('<div class="panel">')
+  if valid
+    mainProfileDiv.addClass('panel-default')
+  else
+    mainProfileDiv.addClass('panel-danger')
+
   mainProfileDiv.append makeHeadingPanel(service)
-  mainProfileDiv.append makeBodyPanel(profile, username)
+  mainProfileDiv.append makeBodyPanel(profile, username, valid)
 
   $('#tab-profiles').append(mainProfileDiv)
 
@@ -75,8 +90,7 @@ handleProfiles = (profiles) ->
     $('#profiles-empty').removeClass('hidden')
   else
     for own profile, data of profiles
-      if data.valid
-        addProfile(profile, data)
+      addProfile(profile, data)
 
 
 Profiles =

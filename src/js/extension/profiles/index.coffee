@@ -200,13 +200,17 @@ finishProfileRepair = (profile, storePassword, service, \
 extractProfileData = ({profile, profileData}, storePassword, cb) ->
   {service, username} = profileData
   state = profileData.passwordData.state
-  if stateNeedsRepair(state) and state != states.INVALID
-    logger("Attempting to repair profile #{profile}")
-    attemptProfileRepair profile, storePassword, profileData, (err, newstate) ->
-      if err?
-        logger("Unexpected error when repairing profile", err)
-        return cb("Unexpected error when repairing profile: #{err}")
-      cb(null, {service, username, valid: !stateNeedsRepair(newstate)})
+  if stateNeedsRepair(state)
+    if state == states.INVALID
+      process.nextTick () ->
+        cb(null, {service, username, valid: false})
+    else
+      logger("Attempting to repair profile #{profile}")
+      attemptProfileRepair profile, storePassword, profileData, (err, newstate) ->
+        if err?
+          logger("Unexpected error when repairing profile", err)
+          return cb("Unexpected error when repairing profile: #{err}")
+        cb(null, {service, username, valid: !stateNeedsRepair(newstate)})
   else
     process.nextTick () ->
       cb(null, {service, username, valid: true})
