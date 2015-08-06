@@ -10,8 +10,9 @@ closeTab = () ->
 
 
 UnauthTimer =
-  setup: (tabid) ->
+  setup: (id) ->
     logger("Setting unauth timer")
+    tabid = id
     timer = setTimeout(closeTab, (constants.AUTO_UNAUTH_SECONDS * 1000))
 
   reset: () ->
