@@ -2,7 +2,10 @@ logger           = require('../../lib/util/logging').logger(['ext', 'ux', 'addne
 sender           = require('../messaging/ui/sender')
 unauthTimer      = require('./tools/unauth_timer')
 ephemeralStorage = require('./tools/ephemeral_storage')
+NotificationBar  = require('./tools/notification_bar')
 profiles         = require('./profiles')
+
+notification = new NotificationBar($('#alert-addnew'))
 
 setupAddNewSelectors = () ->
   handler = () ->
@@ -36,9 +39,18 @@ addNewClickedHandler = () ->
   profile = uuid.v1()
   {storePassword} = ephemeralStorage
 
-  sender.sendAddNewMessage profile, storePassword, service, username, password, () ->
+  sender.sendAddNewMessage profile, storePassword, service, \
+                           username, password, (err, res) ->
+    if err?
+      message = "Couldn't add profile. " + \
+                "Please ensure your credentials are correct."
+      notification.display('Error!', message, 60000, 'danger')
+      return
     profiles.addProfile(profile, {service, username})
-    $('#tabhead-home').click()
+    $('#addnew-username').val('')
+    $('#addnew-password').val('')
+    message = "#{service} profile added successfully."
+    notification.display('Success!', message, 15000, 'success')
 
 AddNew =
   setup: () ->

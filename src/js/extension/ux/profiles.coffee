@@ -3,8 +3,10 @@ constants          = require('../../lib/config/constants')
 sender             = require('../messaging/ui/sender')
 unauthTimer        = require('./tools/unauth_timer')
 ephemeralStorage   = require('./tools/ephemeral_storage')
+NotificationBar  = require('./tools/notification_bar')
 
 NO_TOKEN_TEXT = '<none>'
+notification = new NotificationBar($('#alert-profiles'))
 
 makeHeadingPanel = (service) ->
   headingPanel = $('<div class="panel-heading">')
@@ -39,14 +41,22 @@ tokenClickHandler = () ->
   buttonElement = $(this)
   profile = buttonElement.data('profile')
   buttonElement.addClass('spinner-active')
+  message = "Creating your token..."
+  notification.display('Please wait', message, 15000, 'info')
   sender.sendGetTokenMessage profile, storePassword, (err, token) ->
     buttonElement.removeClass('spinner-active')
     if err?
       logger("Unexpected error getting token:", err)
+      message = "Couldn't get token. Please try again later."
+      notification.display('Error!', message, 60000, 'danger')
       return
     tokenTextElement = buttonElement.siblings('div')
     tokenTextElement.text(token)
+    message = "Token created successfully."
+    notification.display('Success!', message, 15000, 'success')
     setTimeout () ->
+      message = "Your token expired and is no longer valid."
+      notification.display('Token expired!', message, 10000, 'info')
       tokenTextElement.text(NO_TOKEN_TEXT)
     , constants.TEMPORARY_PASSWORD_VALIDITY_MS
 
