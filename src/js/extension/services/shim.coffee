@@ -36,6 +36,9 @@ formRedirectHandler = (tabid, args, userInfo, cb) ->
         interval: 200
 
       async.retry retryOpts, (done) ->
+        if aborted
+          return process.nextTick () ->
+            done("Aborted")
         chrome.tabs.get tabid, (tab) ->
           if !tab.url?
             logger("Unexpected tab object with no URL")
