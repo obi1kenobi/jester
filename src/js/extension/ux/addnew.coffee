@@ -1,8 +1,8 @@
 logger           = require('../../lib/util/logging').logger(['ext', 'ux', 'addnew'])
 sender           = require('../messaging/ui/sender')
+unauthTimer      = require('./tools/unauth_timer')
+ephemeralStorage = require('./tools/ephemeral_storage')
 profiles         = require('./profiles')
-unauthTimer      = require('./unauth_timer')
-ephemeralStorage = require('./ephemeral_storage')
 
 setupAddNewSelectors = () ->
   handler = () ->

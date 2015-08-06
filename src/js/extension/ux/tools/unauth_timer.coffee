@@ -1,5 +1,5 @@
-logger          = require('../../lib/util/logging').logger(['ext', 'ux', 'unauth'])
-constants       = require('../../lib/config/constants')
+logger          = require('../../../lib/util/logging').logger(['ext', 'ux', 'unauth'])
+constants       = require('../../../lib/config/constants')
 
 
 timer = null

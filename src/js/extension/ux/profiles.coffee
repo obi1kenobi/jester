@@ -1,8 +1,8 @@
 logger             = require('../../lib/util/logging').logger(['ext', 'ux', 'profiles'])
 constants          = require('../../lib/config/constants')
 sender             = require('../messaging/ui/sender')
-unauthTimer        = require('./unauth_timer')
-ephemeralStorage   = require('./ephemeral_storage')
+unauthTimer        = require('./tools/unauth_timer')
+ephemeralStorage   = require('./tools/ephemeral_storage')
 
 NO_TOKEN_TEXT = '<none>'
 
