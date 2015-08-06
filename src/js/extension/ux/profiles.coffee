@@ -47,12 +47,16 @@ tokenClickHandler = () ->
   unauthTimer.reset()
   {storePassword} = ephemeralStorage
   buttonElement = $(this)
+  buttonElement.off('click', tokenClickHandler)
+
   profile = buttonElement.data('profile')
   buttonElement.addClass('spinner-active')
   message = "Creating your token..."
   notification.display('Please wait', message, 60000, 'info')
+
   sender.sendGetTokenMessage profile, storePassword, (err, token) ->
     buttonElement.removeClass('spinner-active')
+
     if err?
       logger("Unexpected error getting token:", err)
       message = "Unexpected error, couldn't get token. This profile is now disabled."
@@ -60,14 +64,17 @@ tokenClickHandler = () ->
       buttonElement.siblings('div.list-group-item').addClass('disabled')
       notification.display('Error!', message, 60000, 'danger')
       return
+
     tokenTextElement = buttonElement.siblings('div')
     tokenTextElement.text(token)
     message = "Token created successfully."
     notification.display('Success!', message, 30000, 'success')
+
     setTimeout () ->
       message = "Your token expired and is no longer valid."
       notification.display('Token expired!', message, 20000, 'info')
       tokenTextElement.text(NO_TOKEN_TEXT)
+      buttonElement.click(tokenClickHandler)
     , constants.TEMPORARY_PASSWORD_VALIDITY_MS
 
 addProfile = (profile, {service, username, valid}) ->
