@@ -39,6 +39,9 @@ addNewClickedHandler = () ->
   profile = uuid.v1()
   {storePassword} = ephemeralStorage
 
+  message = "Adding a #{service} profile..."
+  notification.display('Please wait', message, 30000, 'info')
+
   sender.sendAddNewMessage profile, storePassword, service, \
                            username, password, (err, res) ->
     if err?
@@ -46,7 +49,7 @@ addNewClickedHandler = () ->
                 "Please ensure your credentials are correct."
       notification.display('Error!', message, 60000, 'danger')
       return
-    profiles.addProfile(profile, {service, username})
+    profiles.addProfile(profile, {service, username, valid: true})
     $('#addnew-username').val('')
     $('#addnew-password').val('')
     message = "#{service} profile added successfully."

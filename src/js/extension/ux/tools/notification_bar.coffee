@@ -38,7 +38,7 @@ class NotificationBar
       @innerElement.text('')
       @timer = null
 
-    setTimeout timeoutHandler.bind(this), duration
+    @timer = setTimeout timeoutHandler.bind(this), duration
 
 
 module.exports = NotificationBar
