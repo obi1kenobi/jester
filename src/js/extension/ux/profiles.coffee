@@ -62,8 +62,10 @@ handleGetToken = (buttonElement) ->
         .data('valid', false)
       buttonElement.siblings('div.list-group-item').addClass('disabled')
       buttonElement.parents('.panel') \
-        .removeClass('.panel-default')
+        .removeClass('panel-default')
         .addClass('panel-danger')
+
+      buttonElement.click(tokenClickHandler)
 
       message = "Unexpected error, couldn't get token. This profile is now disabled."
       notification.display('Error!', message, 60000, 'danger')
@@ -106,7 +108,7 @@ handleRepair = (buttonElement) ->
         .text(NO_TOKEN_TEXT)
 
       buttonElement.parents('.panel') \
-        .removeClass('.panel-danger')
+        .removeClass('panel-danger')
         .addClass('panel-default')
 
       message = "The repair was successful, the profile is re-enabled."
