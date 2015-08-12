@@ -1,12 +1,19 @@
 uuid             = require('../../../deps/uuid')
 logger           = require('../../lib/util/logging').logger(['ext', 'ux', 'addnew'])
 sender           = require('../messaging/ui/sender')
+serviceData      = require('../services/service_data')
 unauthTimer      = require('./tools/unauth_timer')
 ephemeralStorage = require('./tools/ephemeral_storage')
 NotificationBar  = require('./tools/notification_bar')
 profiles         = require('./profiles')
 
 notification = new NotificationBar($('#alert-addnew'))
+
+createAddNewOption = (service, handler) ->
+  element = $("<a href=\"#\" class=\"list-group-item\">#{service}</a>")
+  element.data('service', service)
+  $('#addnew-selector').append(element)
+  element.click(handler)
 
 setupAddNewSelectors = () ->
   handler = () ->
@@ -17,26 +24,18 @@ setupAddNewSelectors = () ->
     $('#addnew-username').val('')
     $('#addnew-password').val('')
 
-  $('#addnew-yahoo').click handler
-  # $('#addnew-dockerhub').click handler
+  for service in Object.keys(serviceData)
+    createAddNewOption(service, handler)
 
 setupAddNewButton = () ->
   $('#addnew-setup').click(addNewClickedHandler)
-
-getSelectedServiceName = () ->
-  if $('#addnew-yahoo').hasClass('active')
-    return 'Yahoo'
-  # else if $('#addnew-dockerhub').hasClass('active')
-  #   return 'DockerHub'
-  else
-    throw new Error('No service requested!')
 
 addNewClickedHandler = () ->
   unauthTimer.reset()
   username = $('#addnew-username').val()
   password = $('#addnew-password').val()
 
-  service = getSelectedServiceName()
+  service = $('#addnew-selector').children('.active').data('service')
   profile = uuid.v1()
   {storePassword} = ephemeralStorage
 
