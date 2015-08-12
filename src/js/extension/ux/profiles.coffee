@@ -1,4 +1,3 @@
-$                  = require('../../../deps/jquery.min.js')
 logger             = require('../../lib/util/logging').logger(['ext', 'ux', 'profiles'])
 constants          = require('../../lib/config/constants')
 sender             = require('../messaging/ui/sender')
@@ -58,11 +57,15 @@ handleGetToken = (buttonElement) ->
 
     if err?
       logger("Unexpected error getting token:", err)
-      message = "Unexpected error, couldn't get token. This profile is now disabled."
       buttonElement.addClass('has-error') \
         .text("Repair")
         .data('valid', false)
       buttonElement.siblings('div.list-group-item').addClass('disabled')
+      buttonElement.parents('.panel') \
+        .removeClass('.panel-default')
+        .addClass('panel-danger')
+
+      message = "Unexpected error, couldn't get token. This profile is now disabled."
       notification.display('Error!', message, 60000, 'danger')
       return
 
@@ -101,7 +104,12 @@ handleRepair = (buttonElement) ->
       buttonElement.siblings('div.list-group-item') \
         .removeClass('disabled')
         .text(NO_TOKEN_TEXT)
-      message = "The repair was successful, the profile is re-enabled".
+
+      buttonElement.parents('.panel') \
+        .removeClass('.panel-danger')
+        .addClass('panel-default')
+
+      message = "The repair was successful, the profile is re-enabled."
       notification.display('Success!', message, 30000, 'success')
 
     buttonElement.click(tokenClickHandler)

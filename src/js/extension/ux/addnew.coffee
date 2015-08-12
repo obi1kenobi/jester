@@ -1,4 +1,3 @@
-$                = require('../../../deps/jquery.min.js')
 uuid             = require('../../../deps/uuid')
 logger           = require('../../lib/util/logging').logger(['ext', 'ux', 'addnew'])
 sender           = require('../messaging/ui/sender')
