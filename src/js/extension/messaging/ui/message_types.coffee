@@ -5,5 +5,6 @@ MessageTypes =
   CONFIG_EXISTS: 'ui:exist_conf'
   GET_CONFIG: 'ui:get_conf'
   SET_CONFIG: 'ui:set_conf'
+  REPAIR_PROFILE: 'ui:repair_profile'
 
 module.exports = MessageTypes

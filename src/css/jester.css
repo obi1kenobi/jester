@@ -125,11 +125,6 @@ body {
                     0 0 8px rgba(232,130,102,.6) !important;
 }
 
-a.list-group-item.active.disabled {
-  background-image: none;
-  background-color: darkcyan;
-}
-
 div.list-group-item.disabled {
   color: red;
 }

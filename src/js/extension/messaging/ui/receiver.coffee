@@ -27,6 +27,7 @@ Receiver =
   #   CONFIG_EXISTS = ({}, sendResponse) ->
   #   GET_CONFIG = ({storePassword}, sendResponse) ->
   #   SET_CONFIG = ({storePassword, config}, sendResponse) ->
+  #   REPAIR_PROFILE = ({profile, storePassword}, sendResponse) ->
   setup: (handlers) ->
     for key in Object.keys(types)
       type = types[key]

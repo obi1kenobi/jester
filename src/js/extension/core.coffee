@@ -46,6 +46,10 @@ setupHandlers = () ->
     logger('received set-config message')
     secureStore.setConfig(storePassword, config, sendResponse)
 
+  repairProfileHandler = ({profile, storePassword}, sendResponse) ->
+    logger('received repair-profile message')
+    profiles.repair(profile, storePassword, sendResponse)
+
   handlers = {}
   handlers[types.ADD_NEW] = addNewHandler
   handlers[types.GET_TOKEN] = getTokenHandler
@@ -53,6 +57,7 @@ setupHandlers = () ->
   handlers[types.CONFIG_EXISTS] = configExistsHandler
   handlers[types.GET_CONFIG] = getConfigHandler
   handlers[types.SET_CONFIG] = setConfigHandler
+  handlers[types.REPAIR_PROFILE] = repairProfileHandler
 
   receiver.setup(handlers)
 

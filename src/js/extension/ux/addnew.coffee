@@ -17,7 +17,7 @@ setupAddNewSelectors = () ->
     $('#addnew-password').val('')
 
   $('#addnew-yahoo').click handler
-  $('#addnew-dockerhub').click handler
+  # $('#addnew-dockerhub').click handler
 
 setupAddNewButton = () ->
   $('#addnew-setup').click(addNewClickedHandler)
@@ -25,8 +25,8 @@ setupAddNewButton = () ->
 getSelectedServiceName = () ->
   if $('#addnew-yahoo').hasClass('active')
     return 'Yahoo'
-  else if $('#addnew-dockerhub').hasClass('active')
-    return 'DockerHub'
+  # else if $('#addnew-dockerhub').hasClass('active')
+  #   return 'DockerHub'
   else
     throw new Error('No service requested!')
 

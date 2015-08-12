@@ -25,32 +25,30 @@ makeBodyPanel = (profile, username, valid) ->
 
   if valid
     getTokenButton = $('<a href="#" class="list-group-item has-spinner active">') \
-      .data('profile', profile) \
+      .data('profile', profile)
+      .data('valid', true)
       .text("Get token")
       .append $('<i class="fa fa-spinner fa-spin">')
     tokenField = $('<div class="list-group-item">').text(NO_TOKEN_TEXT)
-    getTokenButton.click(tokenClickHandler)
   else
-    getTokenButton = $('<a href="#" class="list-group-item has-spinner ' + \
-                       'active disabled">') \
-      .data('profile', profile) \
-      .text("Get token")
+    getTokenButton = $('<a href="#" class="list-group-item has-spinner active ' + \
+                       'has-error">') \
+      .data('profile', profile)
+      .data('valid', false)
+      .text("Repair")
       .append $('<i class="fa fa-spinner fa-spin">')
     tokenField = $('<div class="list-group-item disabled">').text('Profile invalid!')
 
+  getTokenButton.click(tokenClickHandler)
   tokenListGroup.append(getTokenButton).append(tokenField)
   tokenDiv = tokenDiv.append tokenListGroup
 
   return bodyPanel.append(accountDiv).append(tokenDiv)
 
-tokenClickHandler = () ->
-  unauthTimer.reset()
+handleGetToken = (buttonElement) ->
   {storePassword} = ephemeralStorage
-  buttonElement = $(this)
-  buttonElement.off('click', tokenClickHandler)
-
   profile = buttonElement.data('profile')
-  buttonElement.addClass('spinner-active')
+
   message = "Creating your token..."
   notification.display('Please wait', message, 60000, 'info')
 
@@ -60,7 +58,9 @@ tokenClickHandler = () ->
     if err?
       logger("Unexpected error getting token:", err)
       message = "Unexpected error, couldn't get token. This profile is now disabled."
-      buttonElement.addClass('disabled')
+      buttonElement.addClass('has-error') \
+        .text("Repair")
+        .data('valid', false)
       buttonElement.siblings('div.list-group-item').addClass('disabled')
       notification.display('Error!', message, 60000, 'danger')
       return
@@ -76,6 +76,47 @@ tokenClickHandler = () ->
       tokenTextElement.text(NO_TOKEN_TEXT)
       buttonElement.click(tokenClickHandler)
     , constants.TEMPORARY_PASSWORD_VALIDITY_MS
+
+handleRepair = (buttonElement) ->
+  {storePassword} = ephemeralStorage
+  profile = buttonElement.data('profile')
+
+  message = "Attempting to repair the profile..."
+  notification.display('Please wait', message, 60000, 'info')
+
+  sender.sendRepairProfileMessage profile, storePassword, (err, valid) ->
+    buttonElement.removeClass('spinner-active')
+
+    if err?
+      logger("Repair encountered an error:", err)
+
+    if err? or !valid
+      message = "Please try again later or reset your password manually."
+      notification.display('Repair failed!', message, 60000, 'danger')
+    else
+      buttonElement.removeClass('has-error') \
+        .text('Get token')
+        .data('valid', true)
+      buttonElement.siblings('div.list-group-item') \
+        .removeClass('disabled')
+        .text(NO_TOKEN_TEXT)
+      message = "The repair was successful, the profile is re-enabled".
+      notification.display('Success!', message, 30000, 'success')
+
+    buttonElement.click(tokenClickHandler)
+
+tokenClickHandler = () ->
+  unauthTimer.reset()
+  buttonElement = $(this)
+  buttonElement.off('click', tokenClickHandler)
+
+  valid = buttonElement.data('valid')
+  buttonElement.addClass('spinner-active')
+
+  if valid
+    handleGetToken(buttonElement)
+  else
+    handleRepair(buttonElement)
 
 addProfile = (profile, {service, username, valid}) ->
   $('#profiles-empty').addClass('hidden')

@@ -47,4 +47,10 @@ Sender =
 
     sendMessage(type, args, cb)
 
+  sendRepairProfileMessage: (profile, storePassword, cb) ->
+    args = {profile, storePassword}
+    type = types.REPAIR_PROFILE
+
+    sendMessage(type, args, cb)
+
 module.exports = Sender

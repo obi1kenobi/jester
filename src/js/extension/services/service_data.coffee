@@ -26,33 +26,35 @@ ServiceData =
           newPassword: '#password'
           confirmPassword: '#password-confirm'
         submit: '#primary-cta'
-        onSuccessURL:
-          new RegExp('^' + \
-                     quote('https://edit.yahoo.com/config/change_pw?.done=') + \
-                     '.*')
-  DockerHub:
-    login:
-      url: 'https://hub.docker.com/account/login/'
-      type: 'form_redirect'
-      args:
-        input:
-          username: '#id_username'
-          password: '#id_password'
-        submit: '.btn-primary'
-        onSuccessURL: new RegExp('^' + quote('https://hub.docker.com/') + '$')
-    changePwd:
-      url: 'https://hub.docker.com/account/change-password/'
-      type: 'form_redirect'
-      args:
-        input:
-          oldPassword: '#id_old_password'
-          newPassword: '#id_new_password1'
-          confirmPassword: '#id_new_password2'
-        submit: '.btn-primary'
-        onSuccessURL: \
-          new RegExp('^' + \
-                     quote('https://hub.docker.com/account/change-password-done/') + \
-                     '$')
+        onSuccessURL: new RegExp('^' + \
+          quote('https://edit.yahoo.com/config/change_pw?.done=') + '.*')
+  # DockerHub:
+  #   login:
+  #     url: 'https://hub.docker.com/login/'
+  #     type: 'form_redirect'
+  #     args:
+  #       input:
+  #         username: '.DUXInput-b__duxInput___l1DEO' + \
+  #                   '[data-reactid$=".1.0.1.0.0.0.0.0.1.0.0"]'
+  #         password: '.DUXInput-b__duxInput___l1DEO' + \
+  #                   '[data-reactid$=".1.0.1.0.0.0.0.0.2.0.0"]'
+  #       submit: '.button[data-reactid$=".1.0.1.0.0.0.0.0.3.0"]'
+  #       onSuccessURL: new RegExp('^' + quote('https://hub.docker.com/') + '$')
+  #   changePwd:
+  #     url: 'https://hub.docker.com/account/settings/'
+  #     type: 'form_redirect'
+  #     args:
+  #       input:
+  #         oldPassword: '.DUXInput__duxInput___10RXU' + \
+  #                      '[data-reactid$=".1.1.1.0.2.1.0.0.0.0.0.0.0"]'
+  #         newPassword: '.DUXInput__duxInput___10RXU' + \
+  #                      '[data-reactid$=".1.1.1.0.2.1.0.0.0.0.1.0.0"]'
+  #         confirmPassword: '.DUXInput__duxInput___10RXU' + \
+  #                      '[data-reactid$=".1.1.1.0.2.1.0.0.0.0.2.0.0"]'
+  #       submit: '.button[data-reactid$=".1.1.1.0.2.1.0.0.0.1.0.0.0"]'
+  #       onSuccessURL: new RegExp('^' + \
+  #         quote('https://hub.docker.com/account/password-reset-confirm/success/') + \
+  #         '$')
 
 
 

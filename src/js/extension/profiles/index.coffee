@@ -182,5 +182,21 @@ ProfileManager =
 
       tokenSetCb(null, token)
 
+  repair: (profile, storePassword, cb) ->
+    async.waterfall [
+      (done) ->
+        secureStore.getSecret(profile, storePassword, done)
+      (secretData, done) ->
+        if stateNeedsRepair(secretData.passwordData.state)
+          attemptProfileRepair(profile, storePassword, secretData, done)
+        else
+          process.nextTick () ->
+            done(null, secretData.passwordData.state)
+    ], (err, newstate) ->
+      if err?
+        cb(err)
+      else
+        cb(null, !stateNeedsRepair(newstate))
+
 
 module.exports = ProfileManager
