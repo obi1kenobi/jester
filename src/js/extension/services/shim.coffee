@@ -1,3 +1,4 @@
+async            = require('../../../deps/async')
 logger           = require('../../lib/util/logging').logger(['ext', 'svc', 'shim'])
 serviceData      = require('./service_data')
 windowManager    = require('./window_manager')

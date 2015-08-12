@@ -1,3 +1,4 @@
+async         = require('../../../deps/async')
 logger        = require('../../lib/util/logging').logger(['ext', 'profiles'])
 secureStore   = require('../../lib/secure_store')
 secureRandom  = require('../../lib/crypto/secure_random')

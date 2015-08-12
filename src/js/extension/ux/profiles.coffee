@@ -1,9 +1,10 @@
+$                  = require('../../../deps/jquery.min.js')
 logger             = require('../../lib/util/logging').logger(['ext', 'ux', 'profiles'])
 constants          = require('../../lib/config/constants')
 sender             = require('../messaging/ui/sender')
 unauthTimer        = require('./tools/unauth_timer')
 ephemeralStorage   = require('./tools/ephemeral_storage')
-NotificationBar  = require('./tools/notification_bar')
+NotificationBar    = require('./tools/notification_bar')
 
 NO_TOKEN_TEXT = '<none>'
 notification = new NotificationBar($('#alert-profiles'))

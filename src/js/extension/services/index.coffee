@@ -1,3 +1,4 @@
+async           = require('../../../deps/async')
 logger          = require('../../lib/util/logging').logger(['ext', 'svc'])
 constants       = require('../../lib/config/constants')
 serviceData     = require('./service_data')

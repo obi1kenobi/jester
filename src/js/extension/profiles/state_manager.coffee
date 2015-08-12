@@ -1,3 +1,4 @@
+async         = require('../../../deps/async')
 logger        = require('../../lib/util/logging').logger(['ext', 'profiles', 'state'])
 secureStore   = require('../../lib/secure_store')
 states        = require('./states')
