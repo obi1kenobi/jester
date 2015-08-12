@@ -31,7 +31,16 @@ formRedirectHandler = (tabid, args, userInfo, cb) ->
       fn?("Submit aborted, no reply from injected script")
     , 5000
 
-    chrome.tabs.sendMessage tabid, submitOptions, () ->
+    chrome.tabs.sendMessage tabid, submitOptions, (err) ->
+      if err?
+        logger("Unexpected error returned from content script:", err)
+        clearTimeout(timeout)
+        if !aborted
+          fn = cb
+          cb = null
+          fn?(err)
+        return
+
       retryOpts =
         times: 20
         interval: 200
@@ -56,9 +65,48 @@ formRedirectHandler = (tabid, args, userInfo, cb) ->
           cb = null
           fn?(err, res)
 
+samePageElementExistsHandler = (tabid, args, userInfo, cb) ->
+  {input, submit, onSuccessElement} = args
+  scriptArgs = {}
+  for own key, value of input
+    if !userInfo[key]?
+      logger("No user info provided for required field #{key}")
+      return process.nextTick () ->
+        cb("No user info provided for required field #{key}")
+
+    scriptArgs[value] = userInfo[key]
+
+  executeOptions =
+    file: 'js/extension/content/same_page_element_exists.js'
+
+  chrome.tabs.executeScript tabid, executeOptions, () ->
+    submitOptions =
+      input: scriptArgs
+      submit: submit
+      onSuccessElement: onSuccessElement
+
+    aborted = false
+    timeout = setTimeout () ->
+      aborted = true
+      fn = cb
+      cb = null
+      fn?("Submit aborted, no reply from injected script")
+    , 5000
+
+    chrome.tabs.sendMessage tabid, submitOptions, (err) ->
+      if err?
+        logger("Unexpected error returned from content script:", err)
+
+      clearTimeout(timeout)
+      if !aborted
+        fn = cb
+        cb = null
+        fn?(err)
+
 
 handlers = {}
 handlers['form_redirect'] = formRedirectHandler
+handlers['same_page_element_exists'] = samePageElementExistsHandler
 
 
 Shim =
@@ -79,7 +127,22 @@ Shim =
     windowManager.getTab wnd, url, (err, tabid) ->
       if err?
         return cb(err)
-      handlers[type](tabid, args, userInfo, cb)
+
+      # HACK(predrag): Firebase seems to be having an ugly redirect bug
+      #                on the login page, add a longish timeout to avoid it.
+      #                The changePwd elements are added dynamically, so delay
+      #                that content script for a bit as well.
+      if service == 'Firebase'
+        if action == 'login'
+          setTimeout () ->
+            handlers[type](tabid, args, userInfo, cb)
+          , 11000
+        else if action == 'changePwd'
+          setTimeout () ->
+            handlers[type](tabid, args, userInfo, cb)
+          , 3000
+      else
+        handlers[type](tabid, args, userInfo, cb)
 
 
 module.exports = Shim
