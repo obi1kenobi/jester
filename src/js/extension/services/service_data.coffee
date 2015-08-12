@@ -28,6 +28,47 @@ ServiceData =
         submit: '#primary-cta'
         onSuccessURL: new RegExp('^' + \
           quote('https://edit.yahoo.com/config/change_pw?.done=') + '.*')
+  'Hacker News (YCombinator)':
+    login:
+      url: 'https://news.ycombinator.com/login'
+      type: 'form_redirect'
+      args:
+        input:
+          username: 'input[name="acct"]'
+          password: 'input[name="pw"]'
+        submit: 'input[value="login"]'
+        onSuccessURL: new RegExp('^' + quote('https://news.ycombinator.com/') + '$')
+    changePwd:
+      url: 'https://news.ycombinator.com/changepw'
+      type: 'form_redirect'
+      args:
+        input:
+          oldPassword: 'input[name="oldpw"]'
+          newPassword: 'input[name="pw"]'
+        submit: 'input[value="Change"]'
+        onSuccessURL: new RegExp('^' + quote('https://news.ycombinator.com/news') + '$')
+
+  # Firebase:
+  #   login:
+  #     url: 'https://www.firebase.com/login/'
+  #     type: 'form_redirect'
+  #     args:
+  #       input:
+  #         username: '#login-email'
+  #         password: '#login-password'
+  #       submit: '#login-button'
+  #       onSuccessURL: new RegExp('^' + quote('https://www.firebase.com/account/') + '$')
+  #   changePwd:
+  #     url: 'https://www.firebase.com/change_password.html'
+  #     type: ''
+  #     args:
+  #       input:
+  #         oldPassword: '#current'
+  #         newPassword: '#password'
+  #         confirmPassword: '#confirm'
+  #       submit: 'input[value="Change Password"]'
+
+
   # DockerHub:
   #   login:
   #     url: 'https://hub.docker.com/login/'
