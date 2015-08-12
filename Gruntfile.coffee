@@ -38,10 +38,13 @@ module.exports = (grunt) ->
     browserify: {}
     uglify: {}
 
-  codeFiles = grunt.file.expand {cwd: codePath, matchBase: true}, ['*.coffee']
-  nonTestCodeFiles = grunt.file.expand {cwd: codePath}, ['extension/**/*.coffee', 'lib/**/*.coffee']
+  topLevelCodeFiles = grunt.file.expand {cwd: codePath}, [
+    'extension/content/*.coffee',
+    'extension/ux/index.coffee',
+    'extension/core.coffee'
+  ]
 
-  for file in nonTestCodeFiles
+  for file in topLevelCodeFiles
     jsFile = file.replace('.coffee', '.js')
     browserfied = path.join(unpackedDevPath, codeDir, jsFile)
     fileMaps.browserify[browserfied] = path.join(tempCodePath, jsFile)
