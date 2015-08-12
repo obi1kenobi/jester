@@ -2,6 +2,12 @@
 quote = (str) ->
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
+exact = (str) ->
+  return new RegExp('^' + quote(str) + '$')
+
+startsWith = (str) ->
+  return new RegExp('^' + quote(str) + '.*')
+
 # Service info specification:
 #   Each service has two attributes: login, changePwd
 #   Each of these has an url and type, and optional args.
@@ -17,7 +23,7 @@ ServiceData =
           username: '#login-username'
           password: '#login-passwd'
         submit: '#login-signin'
-        onSuccessURL: new RegExp('^' + quote('https://www.yahoo.com/') + '$')
+        onSuccessURL: exact('https://www.yahoo.com/')
     changePwd:
       url: 'https://edit.yahoo.com/config/change_pw'
       type: 'form_redirect'
@@ -26,8 +32,7 @@ ServiceData =
           newPassword: '#password'
           confirmPassword: '#password-confirm'
         submit: '#primary-cta'
-        onSuccessURL: new RegExp('^' + \
-          quote('https://edit.yahoo.com/config/change_pw?.done=') + '.*')
+        onSuccessURL: startsWith('https://edit.yahoo.com/config/change_pw?.done=')
   'Hacker News (YCombinator)':
     login:
       url: 'https://news.ycombinator.com/login'
@@ -37,7 +42,7 @@ ServiceData =
           username: 'input[name="acct"]'
           password: 'input[name="pw"]'
         submit: 'input[value="login"]'
-        onSuccessURL: new RegExp('^' + quote('https://news.ycombinator.com/') + '$')
+        onSuccessURL: exact('https://news.ycombinator.com/')
     changePwd:
       url: 'https://news.ycombinator.com/changepw'
       type: 'form_redirect'
@@ -46,7 +51,7 @@ ServiceData =
           oldPassword: 'input[name="oldpw"]'
           newPassword: 'input[name="pw"]'
         submit: 'input[value="Change"]'
-        onSuccessURL: new RegExp('^' + quote('https://news.ycombinator.com/news') + '$')
+        onSuccessURL: exact('https://news.ycombinator.com/news')
 
   # Firebase:
   #   login:
