@@ -128,3 +128,14 @@ body {
 div.list-group-item.disabled {
   color: red;
 }
+
+/*.panel-title {
+  display: inline-block;
+}
+
+.panel-remove {
+  display: inline-block;
+  position: absolute;
+  right: 3rem;
+  font-size: 1.5em;
+}*/

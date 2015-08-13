@@ -6,13 +6,14 @@ ephemeralStorage   = require('./tools/ephemeral_storage')
 NotificationBar    = require('./tools/notification_bar')
 
 NO_TOKEN_TEXT = '<none>'
-INVALID_PROFILE_TEXT = 'Profile invalid!'
+INACTIVE_PROFILE_TEXT = 'Profile inactive!'
 notification = new NotificationBar($('#alert-profiles'))
 
 makeHeadingPanel = (service) ->
   headingPanel = $('<div class="panel-heading">')
   header = $('<strong class="panel-title">').text(service)
-  return headingPanel.append(header)
+  # remove = $('<i class="fa fa-times panel-remove">')
+  return headingPanel.append(header) #.append(remove)
 
 makeBodyPanel = (profile, username, valid) ->
   bodyPanel = $('<div class="panel-body">')
@@ -64,7 +65,7 @@ updateProfileAppearance = (buttonElement) ->
 
     # setup the text box
     buttonElement.siblings('div.list-group-item').addClass('disabled')
-      .text(INVALID_PROFILE_TEXT)
+      .text(INACTIVE_PROFILE_TEXT)
 
 
 handleGetToken = (buttonElement) ->
