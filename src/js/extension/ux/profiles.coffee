@@ -6,6 +6,7 @@ ephemeralStorage   = require('./tools/ephemeral_storage')
 NotificationBar    = require('./tools/notification_bar')
 
 NO_TOKEN_TEXT = '<none>'
+INVALID_PROFILE_TEXT = 'Profile invalid!'
 notification = new NotificationBar($('#alert-profiles'))
 
 makeHeadingPanel = (service) ->
@@ -23,27 +24,48 @@ makeBodyPanel = (profile, username, valid) ->
   tokenDiv = $('<div class="col-xs-4 account-token">')
   tokenListGroup = $('<div class="list-group">')
 
-  if valid
-    getTokenButton = $('<a href="#" class="list-group-item has-spinner active">') \
-      .data('profile', profile)
-      .data('valid', true)
-      .text("Get token")
-      .append $('<i class="fa fa-spinner fa-spin">')
-    tokenField = $('<div class="list-group-item">').text(NO_TOKEN_TEXT)
-  else
-    getTokenButton = $('<a href="#" class="list-group-item has-spinner active ' + \
-                       'has-error">') \
-      .data('profile', profile)
-      .data('valid', false)
-      .text("Repair")
-      .append $('<i class="fa fa-spinner fa-spin">')
-    tokenField = $('<div class="list-group-item disabled">').text('Profile invalid!')
+  getTokenButton = $('<a href="#" class="list-group-item has-spinner active">') \
+    .data('profile', profile)
+    .data('valid', valid)
+    .append $('<i class="fa fa-spinner fa-spin">')
+  tokenField = $('<div class="list-group-item">')
 
   getTokenButton.click(tokenClickHandler)
   tokenListGroup.append(getTokenButton).append(tokenField)
-  tokenDiv = tokenDiv.append tokenListGroup
+  tokenDiv = tokenDiv.append(tokenListGroup)
 
-  return bodyPanel.append(accountDiv).append(tokenDiv)
+  bodyPanel.append(accountDiv).append(tokenDiv)
+
+  updateProfileAppearance(getTokenButton)
+
+  return bodyPanel
+
+updateProfileAppearance = (buttonElement) ->
+  if buttonElement.data('valid')
+    # setup the panel
+    buttonElement.parents('.panel').removeClass('panel-danger')
+      .addClass('panel-default')
+
+    # setup the button
+    buttonElement.removeClass('has-error')
+      .text('Get token')
+
+    # setup the text box
+    buttonElement.siblings('div.list-group-item').removeClass('disabled')
+      .text(NO_TOKEN_TEXT)
+  else
+    # setup the panel
+    buttonElement.parents('.panel').removeClass('panel-default')
+      .addClass('panel-danger')
+
+    # setup the button
+    buttonElement.addClass('has-error')
+      .text('Repair')
+
+    # setup the text box
+    buttonElement.siblings('div.list-group-item').addClass('disabled')
+      .text(INVALID_PROFILE_TEXT)
+
 
 handleGetToken = (buttonElement) ->
   {storePassword} = ephemeralStorage
@@ -57,13 +79,8 @@ handleGetToken = (buttonElement) ->
 
     if err?
       logger("Unexpected error getting token:", err)
-      buttonElement.addClass('has-error') \
-        .text("Repair")
-        .data('valid', false)
-      buttonElement.siblings('div.list-group-item').addClass('disabled')
-      buttonElement.parents('.panel') \
-        .removeClass('panel-default')
-        .addClass('panel-danger')
+      buttonElement.data('valid', false)
+      updateProfileAppearance(buttonElement)
 
       buttonElement.click(tokenClickHandler)
 
@@ -100,16 +117,8 @@ handleRepair = (buttonElement) ->
       message = "Please try again later or reset your password manually."
       notification.display('Repair failed!', message, 60000, 'danger')
     else
-      buttonElement.removeClass('has-error') \
-        .text('Get token')
-        .data('valid', true)
-      buttonElement.siblings('div.list-group-item') \
-        .removeClass('disabled')
-        .text(NO_TOKEN_TEXT)
-
-      buttonElement.parents('.panel') \
-        .removeClass('panel-danger')
-        .addClass('panel-default')
+      buttonElement.data('valid', true)
+      updateProfileAppearance(buttonElement)
 
       message = "The repair was successful, the profile is re-enabled."
       notification.display('Success!', message, 30000, 'success')
