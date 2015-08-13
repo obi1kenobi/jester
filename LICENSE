@@ -20,5 +20,17 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-Credits:
-- requirejs, license at https://github.com/jrburke/requirejs/blob/master/LICENSE
+Credits, in no particular order:
+- Browserify, http://browserify.org/
+- Grunt, http://gruntjs.com/
+- CoffeeScript, http://coffeescript.org/
+- Bootstrap, http://getbootstrap.com/
+- Font Awesome, http://fortawesome.github.io/Font-Awesome/
+- jQuery, http://jquery.com/
+- Async.js, https://github.com/caolan/async
+- uuid.js, https://github.com/defunctzombie/node-uuid
+- Mocha, http://mochajs.org/
+- Mochify, https://github.com/mantoni/mochify.js
+- Chai, http://chaijs.com/
+- Selenium, http://docs.seleniumhq.org/
+- CoffeeLint, http://www.coffeelint.org/
