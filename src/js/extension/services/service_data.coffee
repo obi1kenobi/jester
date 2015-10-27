@@ -52,27 +52,29 @@ ServiceData =
           newPassword: 'input[name="pw"]'
         submit: 'input[value="Change"]'
         onSuccessURL: exact('https://news.ycombinator.com/news')
-  Firebase:
-    login:
-      url: 'https://www.firebase.com/login/'
-      type: 'form_redirect'
-      args:
-        input:
-          username: '#login-email'
-          password: '#login-password'
-        submit: '#login-button'
-        onSuccessURL: exact('https://www.firebase.com/account/')
-    changePwd:
-      url: 'https://www.firebase.com/change_password.html'
-      type: 'same_page_element_exists'
-      args:
-        input:
-          oldPassword: '#current'
-          newPassword: '#password'
-          confirmPassword: '#confirm'
-        submit: 'input[value="Change Password"]'
-        onSuccessElement: 'p.alert.alert-success' + \
-                          ':contains("Password changed successfully.")'
+
+
+  # Firebase:
+  #   login:
+  #     url: 'https://www.firebase.com/login/'
+  #     type: 'form_redirect'
+  #     args:
+  #       input:
+  #         username: '#login-email'
+  #         password: '#login-password'
+  #       submit: '#login-button'
+  #       onSuccessURL: exact('https://www.firebase.com/account/')
+  #   changePwd:
+  #     url: 'https://www.firebase.com/change_password.html'
+  #     type: 'same_page_element_exists'
+  #     args:
+  #       input:
+  #         oldPassword: '#current'
+  #         newPassword: '#password'
+  #         confirmPassword: '#confirm'
+  #       submit: 'input[value="Change Password"]'
+  #       onSuccessElement: 'p.alert.alert-success' + \
+  #                         ':contains("Password changed successfully.")'
 
 
   # DockerHub:
