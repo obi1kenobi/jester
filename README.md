@@ -24,6 +24,13 @@ After a brief interval, Jester will automatically revoke the token by logging ba
 ### Repairing a profile
 Occasionally, some of your 2FA profiles may enter an unexpected state and will be deactivated until repaired. This could happen, for example, if the browser was closed before Jester finished an operation, due to a network connectivity problem, or due to a website error. On startup, Jester will automatically attempt to repair any deactivated profiles. You may also manually direct it to attempt repair on a profile by clicking the "Repair" button that appears on deactivated profiles.
 
+## Development
+
+- `npm install`
+- `npm install -g grunt-cli`
+
+Add Jester to Chrome (as explained above), and make sure to reload it after every grunt rebuild.
+
 ## Testing
 To run the tests, you need to do two things:
 - from the `scripts` directory, execute `run_selenium.sh`
